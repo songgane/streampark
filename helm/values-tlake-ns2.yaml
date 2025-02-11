@@ -31,7 +31,7 @@ spec:
     env: [
       {
         name: TZ,
-        value: "Asia/Shanghai"
+        value: "Asia/Seoul"
       },
       {
         name: DOCKER_HOST,
@@ -111,15 +111,11 @@ spec:
 
 ingress:
   enabled: true
-  host: "streampark.apache.org"
-  path: "/streampark(/|$)(.*)"
+  host: "streampark.ns2.skt-edp.com"
+  path: "/"
   pathType: "ImplementationSpecific"
   annotations: {
-    # nginx.ingress.kubernetes.io/rewrite-target: "/$2",
     nginx.ingress.kubernetes.io/proxy-body-size: "1024m",
-    ## fix swagger 404: https://github.com/springdoc/springdoc-openapi/issues/1741
-    ## add rewrite ^/v3/(.*)$ /streampark/v3/$1 redirect;
-    # nginx.ingress.kubernetes.io/configuration-snippet: 'rewrite ^(/streampark)$ $1/ permanent;',
     kubernetes.io/ingress.class: "nginx"
   }
   tls:
@@ -129,7 +125,7 @@ ingress:
 
 service:
   ## type determines how the Service is exposed. Defaults to ClusterIP. Valid options are ExternalName, ClusterIP, NodePort, and LoadBalancer
-  type: "NodePort"
+  type: "ClusterIP"
   name: "streampark-service"
 
 streamParkDefaultConfiguration:
