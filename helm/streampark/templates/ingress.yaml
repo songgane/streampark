@@ -23,8 +23,10 @@ metadata:
   labels:
   {{- include "streampark.labels" . | nindent 4 }}
   annotations:
-    {{- with .Values.ingress.annotations }}
-    {{- toYaml . | nindent 4 }}
+    {{- range $key, $value := .Values.ingress.annotations }}
+    {{- if not (eq $value nil) }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
     {{- end }}
 spec:
   rules:
