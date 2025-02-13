@@ -115,11 +115,11 @@ ingress:
   path: "/streampark(/|$)(.*)"
   pathType: "ImplementationSpecific"
   annotations: {
-    # nginx.ingress.kubernetes.io/rewrite-target: "/$2",
+    nginx.ingress.kubernetes.io/rewrite-target: "/$2",
     nginx.ingress.kubernetes.io/proxy-body-size: "1024m",
     ## fix swagger 404: https://github.com/springdoc/springdoc-openapi/issues/1741
     ## add rewrite ^/v3/(.*)$ /streampark/v3/$1 redirect;
-    # nginx.ingress.kubernetes.io/configuration-snippet: 'rewrite ^(/streampark)$ $1/ permanent;',
+    nginx.ingress.kubernetes.io/configuration-snippet: 'rewrite ^(/streampark)$ $1/ permanent;',
     kubernetes.io/ingress.class: "nginx"
   }
   tls:

@@ -132,8 +132,21 @@ streamParkDefaultConfiguration:
   create: true
   # Set append to false to replace configuration files
   append: true
-  # application.yaml: |+
-  #   ...
+  config.yaml: |+
+    ldap:
+      base-dn: dc=sktelecom,dc=com
+      enable: true
+      username: cn=admin,dc=sktelecom,dc=com
+      password: 123qwe
+      urls: ldap://10.10.27.29:389
+      user:
+        email-attribute: mail
+        identity-attribute: cn
+    datasource:
+      dialect: pgsql
+      username: streampark
+      password: streampark
+      url: jdbc:postgresql://streampark-pg-rw:5432/streampark?stringtype=unspecified
   # logback-spring.xml: |+
   #   ...
 
