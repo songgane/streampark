@@ -144,8 +144,8 @@ streamParkDefaultConfiguration:
         identity-attribute: cn
     datasource:
       dialect: pgsql
-      username: streampark
-      password: streampark
+      username: postgres
+      password: postgres
       url: jdbc:postgresql://streampark-pg-rw:5432/streampark?stringtype=unspecified
   # logback-spring.xml: |+
   #   ...
