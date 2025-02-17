@@ -24,12 +24,10 @@ metadata:
   {{- include "streampark.labels" . | nindent 4 }}
 data:
   config.yaml: |+
-{{- if or .Values.streamParkDefaultConfiguration.append (not (index (.Values.streamParkDefaultConfiguration) "config.yaml")) }}
-    {{- $.Files.Get "conf/config.yaml"  | nindent 4 -}}
-{{- end }}
-{{- if index (.Values.streamParkDefaultConfiguration) "config.yaml" }}
-    {{- index (.Values.streamParkDefaultConfiguration) "config.yaml" | nindent 4 -}}
-{{- end }}
+    {{- $defaultValues := fromYaml (tpl (.Files.Get "conf/config.yaml") .) }}
+    {{- $overrideValues := fromYaml (index .Values.streamParkDefaultConfiguration "config.yaml") }}
+    {{- $mergedValues := mergeOverwrite $defaultValues $overrideValues }}
+    {{- toYaml $mergedValues | nindent 4 }}
   logback-spring.xml: |+
 {{- if or .Values.streamParkDefaultConfiguration.append (not (index (.Values.streamParkDefaultConfiguration) "logback-spring.xml")) }}
     {{- $.Files.Get "conf/logback-spring.xml"  | nindent 4 -}}

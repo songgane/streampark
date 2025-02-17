@@ -54,7 +54,15 @@ spec:
   replicaCount: 1
   containerPort: 10000
   name: rest
-  affinity: { }
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: "kubernetes.io/hostname"
+                operator: In
+                values:
+                  - testw04
   ## Compute Resources required by this container. Cannot be updated.
   ## More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container
   nodeSelector: { }
@@ -65,7 +73,7 @@ spec:
   ## More info: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.17/#affinity-v1-core
   resources: {
     limits: {
-      memory: "1Gi",
+      memory: "4Gi",
       cpu: "1"
     },
     requests: {
@@ -106,14 +114,20 @@ spec:
     failureThreshold: "3"
     successThreshold: "1"
 
-  volumeMounts: []
-  volumes: []
+  volumeMounts:
+    - name: flink-pv
+      mountPath: /opt/flink
+  volumes:
+    - name: flink-pv
+      persistentVolumeClaim:
+        claimName: flink-pvc
 
 ingress:
   enabled: true
   host: "streampark.ns2.skt-edp.com"
   path: "/"
   pathType: "ImplementationSpecific"
+  ingressClassName: "nginx"
   annotations: {
     nginx.ingress.kubernetes.io/proxy-body-size: "1024m",
     kubernetes.io/ingress.class: "nginx",
@@ -133,14 +147,14 @@ service:
 streamParkDefaultConfiguration:
   create: true
   # Set append to false to replace configuration files
-  append: false
+  append: true
   config.yaml: |+
     ldap:
-      base-dn: dc=sktelecom,dc=com
       enable: true
+      urls: ldap://10.10.27.29:389
       username: cn=admin,dc=sktelecom,dc=com
       password: 123qwe
-      urls: ldap://10.10.27.29:389
+      base-dn: dc=sktelecom,dc=com
       user:
         email-attribute: mail
         identity-attribute: cn
