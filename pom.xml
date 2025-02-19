@@ -82,7 +82,7 @@
     </modules>
 
     <properties>
-        <project.build.jdk>1.8</project.build.jdk>
+        <project.build.jdk>11</project.build.jdk>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -611,7 +611,7 @@
                     <artifactId>scala-maven-plugin</artifactId>
                     <version>${scala-maven-plugin.version}</version>
                     <configuration>
-                        <addScalacArgs>-target:jvm-${project.build.jdk}</addScalacArgs>
+<!--                        <addScalacArgs>-target:jvm-${project.build.jdk}</addScalacArgs>-->
                         <target>${project.build.jdk}</target>
                         <source>${project.build.jdk}</source>
                     </configuration>
