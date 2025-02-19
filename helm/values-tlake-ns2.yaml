@@ -16,9 +16,9 @@
 #
 
 image:
-  repository: "apache/streampark"
+  repository: "registry.tde.sktelecom.com/emergingdp/tlake/streampark"
   pullPolicy: "IfNotPresent"
-  tag: "2.1.5"
+  tag: "2.1.5-jdk11"
   pullSecret: ""
 
 rbac:
