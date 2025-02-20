@@ -1,6 +1,8 @@
 - [Native Kubernetes](https://nightlies.apache.org/flink/flink-docs-release-1.20/docs/deployment/resource-providers/native_kubernetes/)
 - [Kubernetes Configuration](https://nightlies.apache.org/flink/flink-docs-release-1.20/docs/deployment/config/#kubernetes)
 - test
+  - flink가 실행되는 환경에 HADOOP_CONF_DIR이 설정되어야 한다.
+  - hive.metastore.uris 설정은 HADOOP CONF(core-site.xml)에 포함되어야 한다.
   - session cluster
     ```
     
@@ -17,12 +19,988 @@
         --target kubernetes-session \
         -Dkubernetes.cluster-id=localtest-session-cluster local:///opt/flink/usrlib/flinkcdc-oracle-0.1-OracleToIcebergByDataStreamAPI.jar  --database.hostname 10.10.27.21 --database.port "1521" --database.username flinkcdc --database.password flinkcdc --database.dbname ORCLCDB --database.schema SOE --database.table TEST_NUMBER_TABLE --sink.metastore.uri thrift://10.10.27.26:32010 --sink.warehouse s3a://tlake-ns2/warehouse --write.parallelism "1" --debezium.mining.strategy online_catalog
     ```
+    
+    - FIXME: iceberg-flink 를 인식하지 못한다...
+    ```
+    Enabling required built-in plugins
+    Linking flink-s3-fs-hadoop-1.20.0.jar to plugin directory
+    Successfully enabled flink-s3-fs-hadoop-1.20.0.jar
+    /opt/flink/bin/config-parser-utils.sh: line 45: /opt/flink/conf/config.yaml: Read-only file system
+    Starting kubernetes-taskmanager as a console application on host localtest-session-cluster-taskmanager-1-1.
+    WARNING: Unknown module: jdk.compiler specified to --add-exports
+    WARNING: Unknown module: jdk.compiler specified to --add-exports
+    WARNING: Unknown module: jdk.compiler specified to --add-exports
+    WARNING: Unknown module: jdk.compiler specified to --add-exports
+    WARNING: Unknown module: jdk.compiler specified to --add-exports
+    2025-02-20 08:18:28,906 INFO  org.apache.flink.kubernetes.taskmanager.KubernetesTaskExecutorRunner ] -     taskmanager.memory.jvm-overhead.min=201326592b
+    2025-02-20 08:18:28,906 INFO  org.apache.flink.kubernetes.taskmanager.KubernetesTaskExecutorRunner ] -     -D
+    2025-02-20 08:18:28,906 INFO  org.apache.flink.kubernetes.taskmanager.KubernetesTaskExecutorRunner ] -     taskmanager.memory.framework.off-heap.size=134217728b
+    2025-02-20 08:18:28,906 INFO  org.apache.flink.kubernetes.taskmanager.KubernetesTaskExecutorRunner ] -     -D
+    2025-02-20 08:18:28,906 INFO  org.apache.flink.kubernetes.taskmanager.KubernetesTaskExecutorRunner ] -     taskmanager.memory.network.max=134217730b
+    2025-02-20 08:18:28,907 INFO  org.apache.flink.kubernetes.taskmanager.KubernetesTaskExecutorRunner ] -     -D
+    2025-02-20 08:18:28,907 INFO  org.apache.flink.kubernetes.taskmanager.KubernetesTaskExecutorRunner ] -     taskmanager.memory.framework.heap.size=134217728b
+    2025-02-20 08:18:28,907 INFO  org.apache.flink.kubernetes.taskmanager.KubernetesTaskExecutorRunner ] -     -D
+    2025-02-20 08:18:28,907 INFO  org.apache.flink.kubernetes.taskmanager.KubernetesTaskExecutorRunner ] -     taskmanager.memory.managed.size=536870920b
+    2025-02-20 08:18:28,907 INFO  org.apache.flink.kubernetes.taskmanager.KubernetesTaskExecutorRunner ] -     -D
+    2025-02-20 08:18:28,907 INFO  org.apache.flink.kubernetes.taskmanager.KubernetesTaskExecutorRunner ] -     taskmanager.memory.task.heap.size=402653174b
+    2025-02-20 08:18:28,907 INFO  org.apache.flink.kubernetes.taskmanager.KubernetesTaskExecutorRunner ] -     -D
+    2025-02-20 08:18:28,907 INFO  org.apache.flink.kubernetes.taskmanager.KubernetesTaskExecutorRunner ] -     taskmanager.numberOfTaskSlots=4
+    2025-02-20 08:18:28,907 INFO  org.apache.flink.kubernetes.taskmanager.KubernetesTaskExecutorRunner ] -     -D
+    2025-02-20 08:18:28,907 INFO  org.apache.flink.kubernetes.taskmanager.KubernetesTaskExecutorRunner ] -     taskmanager.memory.jvm-overhead.max=201326592b
+    2025-02-20 08:18:28,907 INFO  org.apache.flink.kubernetes.taskmanager.KubernetesTaskExecutorRunner ] -  Classpath: /opt/flink/lib/aws-java-sdk-bundle-1.11.901.jar:/opt/flink/lib/commons-configuration2-2.1.1.jar:/opt/flink/lib/commons-logging-1.1.3.jar:/opt/flink/lib/flink-cep-1.20.0.jar:/opt/flink/lib/flink-connector-files-1.20.0.jar:/opt/flink/lib/flink-csv-1.20.0.jar:/opt/flink/lib/flink-json-1.20.0.jar:/opt/flink/lib/flink-scala_2.12-1.20.0.jar:/opt/flink/lib/flink-sql-connector-hive-3.1.3_2.12-1.20.0.jar:/opt/flink/lib/flink-sql-connector-oracle-cdc-3.2.1.jar:/opt/flink/lib/flink-table-api-java-uber-1.20.0.jar:/opt/flink/lib/flink-table-planner-loader-1.20.0.jar:/opt/flink/lib/flink-table-runtime-1.20.0.jar:/opt/flink/lib/guava-27.0-jre.jar:/opt/flink/lib/hadoop-auth-3.2.4.jar:/opt/flink/lib/hadoop-aws-3.2.4.jar:/opt/flink/lib/hadoop-common-3.2.4.jar:/opt/flink/lib/hadoop-hdfs-client-3.2.4.jar:/opt/flink/lib/hadoop-mapreduce-client-core-3.2.4.jar:/opt/flink/lib/htrace-core4-4.1.0-incubating.jar:/opt/flink/lib/iceberg-flink-runtime-1.7.1.jar:/opt/flink/lib/log4j-1.2-api-2.17.1.jar:/opt/flink/lib/log4j-api-2.17.1.jar:/opt/flink/lib/log4j-core-2.17.1.jar:/opt/flink/lib/log4j-slf4j-impl-2.17.1.jar:/opt/flink/lib/ojdbc8-19.3.0.0.jar:/opt/flink/lib/stax2-api-4.2.1.jar:/opt/flink/lib/woodstox-core-5.3.0.jar:/opt/flink/lib/flink-dist-1.20.0.jar:::/opt/hadoop/conf:
+    2025-02-20 08:18:28,907 INFO  org.apache.flink.kubernetes.taskmanager.KubernetesTaskExecutorRunner ] - --------------------------------------------------------------------------------
+    2025-02-20 08:18:28,908 INFO  org.apache.flink.kubernetes.taskmanager.KubernetesTaskExecutorRunner ] - Registered UNIX signal handlers for [TERM, HUP, INT]
+    2025-02-20 08:18:28,919 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Using standard YAML parser to load flink configuration file from /opt/flink/conf/config.yaml.
+    2025-02-20 08:18:28,962 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: blob.server.port, 6124
+    2025-02-20 08:18:28,962 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: rest.flamegraph.enabled, true
+    2025-02-20 08:18:28,962 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: jobmanager.execution.failover-strategy, region
+    2025-02-20 08:18:28,962 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: jobmanager.rpc.address, localtest-session-cluster.flinkcdc
+    2025-02-20 08:18:28,962 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: state.savepoints.dir, s3://tlake-ns2/flink/noname/savepoints
+    2025-02-20 08:18:28,962 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: kubernetes.cluster-id, localtest-session-cluster
+    2025-02-20 08:18:28,962 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: kubernetes.service-account, flink
+    2025-02-20 08:18:28,962 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: s3.connection.ssl.enabled, false
+    2025-02-20 08:18:28,963 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: kubernetes.hadoop.conf.config-map.name, flinkcdc-hive-site-cm
+    2025-02-20 08:18:28,963 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: s3.secret-key, ******
+    2025-02-20 08:18:28,963 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: s3.endpoint, http://10.10.27.23:9000
+    2025-02-20 08:18:28,963 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: kubernetes.namespace, flinkcdc
+    2025-02-20 08:18:28,963 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: parallelism.default, 2
+    2025-02-20 08:18:28,963 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: taskmanager.numberOfTaskSlots, 4
+    2025-02-20 08:18:28,963 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: kubernetes.rest-service.exposed.type, NodePort
+    2025-02-20 08:18:28,963 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: env.java.opts.all, --add-exports=java.base/sun.net.util=ALL-UNNAMED --add-exports=java.rmi/sun.rmi.registry=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED --add-exports=java.security.jgss/sun.security.krb5=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.base/java.time=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.locks=ALL-UNNAMED
+    2025-02-20 08:18:28,963 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: kubernetes.container.image.ref, registry.tde.sktelecom.com/emergingdp/tlake/flink:1.20.0_scala_2.12_java11-hadoop3.2.4-hive3.1.3-iceberg1.7.1-s3-oracle
+    2025-02-20 08:18:28,963 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: historyserver.archive.fs.dir, s3a://tlake-ns2/flink/archives
+    2025-02-20 08:18:28,964 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: jobmanager.archive.fs.dir, s3a://tlake-ns2/flink/archives
+    2025-02-20 08:18:28,964 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: taskmanager.memory.process.size, 1728m
+    2025-02-20 08:18:28,964 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: kubernetes.internal.jobmanager.entrypoint.class, org.apache.flink.kubernetes.entrypoint.KubernetesSessionClusterEntrypoint
+    2025-02-20 08:18:28,964 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: kubernetes.artifacts.local-upload-enabled, true
+    2025-02-20 08:18:28,964 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: web.cancel.enable, true
+    2025-02-20 08:18:28,964 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: execution.target, kubernetes-session
+    2025-02-20 08:18:28,964 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: jobmanager.memory.process.size, 1600m
+    2025-02-20 08:18:28,964 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: jobmanager.rpc.port, 6123
+    2025-02-20 08:18:28,964 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: taskmanager.rpc.port, 6122
+    2025-02-20 08:18:28,964 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: kubernetes.pod-template-file.default, /Users/noname/Workspace/src/github/streaming/flinkcdc-oracle/doc/job/pod-template.yaml
+    2025-02-20 08:18:28,964 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: rest.client.max-content-length, 209715200
+    2025-02-20 08:18:28,965 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: s3.access-key, minioadmin
+    2025-02-20 08:18:28,965 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: execution.checkpointing.interval, 10s
+    2025-02-20 08:18:28,965 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: internal.cluster.execution-mode, NORMAL
+    2025-02-20 08:18:28,965 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: web.submit.enable, true
+    2025-02-20 08:18:28,965 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: rest.address, localhost
+    2025-02-20 08:18:28,965 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: state.checkpoints.dir, s3://tlake-ns2/flink/noname/checkpoints
+    2025-02-20 08:18:28,965 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading configuration property: s3.path.style.access, true
+    2025-02-20 08:18:28,965 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading dynamic configuration property: taskmanager.resource-id, localtest-session-cluster-taskmanager-1-1
+    2025-02-20 08:18:28,965 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading dynamic configuration property: taskmanager.memory.network.min, 134217730b
+    2025-02-20 08:18:28,965 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading dynamic configuration property: jobmanager.memory.off-heap.size, 134217728b
+    2025-02-20 08:18:28,965 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading dynamic configuration property: taskmanager.cpu.cores, 4.0
+    2025-02-20 08:18:28,966 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading dynamic configuration property: taskmanager.memory.task.off-heap.size, 0b
+    2025-02-20 08:18:28,966 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading dynamic configuration property: taskmanager.memory.jvm-metaspace.size, 268435456b
+    2025-02-20 08:18:28,966 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading dynamic configuration property: jobmanager.memory.jvm-overhead.min, 201326592b
+    2025-02-20 08:18:28,966 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading dynamic configuration property: external-resources, none
+    2025-02-20 08:18:28,966 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading dynamic configuration property: web.tmpdir, /tmp/flink-web-3d1ee81f-c16c-4464-97d0-8ac3d7cb6a3b
+    2025-02-20 08:18:28,966 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading dynamic configuration property: taskmanager.memory.jvm-overhead.min, 201326592b
+    2025-02-20 08:18:28,966 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading dynamic configuration property: taskmanager.memory.framework.off-heap.size, 134217728b
+    2025-02-20 08:18:28,966 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading dynamic configuration property: taskmanager.memory.network.max, 134217730b
+    2025-02-20 08:18:28,966 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading dynamic configuration property: taskmanager.memory.framework.heap.size, 134217728b
+    2025-02-20 08:18:28,966 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading dynamic configuration property: taskmanager.memory.managed.size, 536870920b
+    2025-02-20 08:18:28,966 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading dynamic configuration property: taskmanager.memory.task.heap.size, 402653174b
+    2025-02-20 08:18:28,967 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading dynamic configuration property: taskmanager.numberOfTaskSlots, 4
+    2025-02-20 08:18:28,967 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading dynamic configuration property: taskmanager.memory.jvm-overhead.max, 201326592b
+    2025-02-20 08:18:28,967 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading dynamic configuration property: jobmanager.memory.jvm-metaspace.size, 268435456b
+    2025-02-20 08:18:28,967 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading dynamic configuration property: jobmanager.memory.heap.size, 1073741824b
+    2025-02-20 08:18:28,967 INFO  org.apache.flink.configuration.GlobalConfiguration           ] - Loading dynamic configuration property: jobmanager.memory.jvm-overhead.max, 201326592b
+    2025-02-20 08:18:29,014 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID not found, creating it: external-resource-gpu
+    2025-02-20 08:18:29,018 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID not found, creating it: metrics-datadog
+    2025-02-20 08:18:29,018 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID not found, creating it: metrics-graphite
+    2025-02-20 08:18:29,018 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID not found, creating it: metrics-influx
+    2025-02-20 08:18:29,018 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID not found, creating it: metrics-jmx
+    2025-02-20 08:18:29,018 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID not found, creating it: metrics-prometheus
+    2025-02-20 08:18:29,018 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID not found, creating it: metrics-slf4j
+    2025-02-20 08:18:29,018 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID not found, creating it: metrics-statsd
+    2025-02-20 08:18:29,019 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID not found, creating it: flink-s3-fs-hadoop-1.20.0
+    2025-02-20 08:18:29,065 INFO  org.apache.flink.runtime.state.changelog.StateChangelogStorageLoader ] - StateChangelogStorageLoader initialized with shortcut names {memory,filesystem}.
+    2025-02-20 08:18:29,065 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID found, reusing it: external-resource-gpu
+    2025-02-20 08:18:29,065 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID found, reusing it: metrics-datadog
+    2025-02-20 08:18:29,065 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID found, reusing it: metrics-graphite
+    2025-02-20 08:18:29,065 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID found, reusing it: metrics-influx
+    2025-02-20 08:18:29,065 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID found, reusing it: metrics-jmx
+    2025-02-20 08:18:29,065 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID found, reusing it: metrics-prometheus
+    2025-02-20 08:18:29,065 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID found, reusing it: metrics-slf4j
+    2025-02-20 08:18:29,065 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID found, reusing it: metrics-statsd
+    2025-02-20 08:18:29,065 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID found, reusing it: flink-s3-fs-hadoop-1.20.0
+    2025-02-20 08:18:29,067 INFO  org.apache.flink.runtime.state.changelog.StateChangelogStorageLoader ] - StateChangelogStorageLoader initialized with shortcut names {memory,filesystem}.
+    2025-02-20 08:18:29,084 INFO  org.apache.flink.runtime.security.modules.HadoopModule       ] - Hadoop user set to flink (auth:SIMPLE)
+    2025-02-20 08:18:29,085 INFO  org.apache.flink.runtime.security.modules.HadoopModule       ] - Kerberos security is disabled.
+    2025-02-20 08:18:29,094 INFO  org.apache.flink.runtime.security.modules.JaasModule         ] - Jaas file will be created as /tmp/jaas-18324656113644331031.conf.
+    2025-02-20 08:18:29,274 INFO  org.apache.flink.runtime.util.LeaderRetrievalUtils           ] - Trying to select the network interface and address to use by connecting to the leading JobManager.
+    2025-02-20 08:18:29,275 INFO  org.apache.flink.runtime.util.LeaderRetrievalUtils           ] - TaskManager will try to connect for PT10S before falling back to heuristics
+    2025-02-20 08:18:29,561 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner      ] - TaskManager will use hostname/address 'localtest-session-cluster-taskmanager-1-1' (10.233.67.247) for communication.
+    2025-02-20 08:18:29,594 INFO  org.apache.flink.runtime.rpc.pekko.PekkoRpcServiceUtils      ] - Trying to start actor system, external address 10.233.67.247:6122, bind address 0.0.0.0:6122.
+    2025-02-20 08:18:30,010 INFO  org.apache.pekko.event.slf4j.Slf4jLogger                     ] - Slf4jLogger started
+    2025-02-20 08:18:30,032 INFO  org.apache.pekko.remote.RemoteActorRefProvider               ] - Pekko Cluster not in use - enabling unsafe features anyway because `pekko.remote.use-unsafe-remote-features-outside-cluster` has been enabled.
+    2025-02-20 08:18:30,032 INFO  org.apache.pekko.remote.Remoting                             ] - Starting remoting
+    2025-02-20 08:18:30,144 INFO  org.apache.pekko.remote.Remoting                             ] - Remoting started; listening on addresses :[pekko.tcp://flink@10.233.67.247:6122]
+    2025-02-20 08:18:30,236 INFO  org.apache.flink.runtime.rpc.pekko.PekkoRpcServiceUtils      ] - Actor system started at pekko.tcp://flink@10.233.67.247:6122
+    2025-02-20 08:18:30,248 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner      ] - Using working directory: WorkingDirectory(/tmp/tm_localtest-session-cluster-taskmanager-1-1)
+    2025-02-20 08:18:30,256 INFO  org.apache.flink.runtime.metrics.MetricRegistryImpl          ] - No metrics reporter configured, no metrics will be exposed/reported.
+    2025-02-20 08:18:30,256 INFO  org.apache.flink.runtime.metrics.MetricRegistryImpl          ] - No trace reporter configured, no metrics will be exposed/reported.
+    2025-02-20 08:18:30,260 INFO  org.apache.flink.runtime.rpc.pekko.PekkoRpcServiceUtils      ] - Trying to start actor system, external address 10.233.67.247:0, bind address 0.0.0.0:0.
+    2025-02-20 08:18:30,273 INFO  org.apache.pekko.event.slf4j.Slf4jLogger                     ] - Slf4jLogger started
+    2025-02-20 08:18:30,275 INFO  org.apache.pekko.remote.RemoteActorRefProvider               ] - Pekko Cluster not in use - enabling unsafe features anyway because `pekko.remote.use-unsafe-remote-features-outside-cluster` has been enabled.
+    2025-02-20 08:18:30,276 INFO  org.apache.pekko.remote.Remoting                             ] - Starting remoting
+    2025-02-20 08:18:30,283 INFO  org.apache.pekko.remote.Remoting                             ] - Remoting started; listening on addresses :[pekko.tcp://flink-metrics@10.233.67.247:34641]
+    2025-02-20 08:18:30,289 INFO  org.apache.flink.runtime.rpc.pekko.PekkoRpcServiceUtils      ] - Actor system started at pekko.tcp://flink-metrics@10.233.67.247:34641
+    2025-02-20 08:18:30,298 INFO  org.apache.flink.runtime.rpc.pekko.PekkoRpcService           ] - Starting RPC endpoint for org.apache.flink.runtime.metrics.dump.MetricQueryService at pekko://flink-metrics/user/rpc/MetricQueryService_localtest-session-cluster-taskmanager-1-1 .
+    2025-02-20 08:18:30,346 INFO  org.apache.flink.runtime.blob.PermanentBlobCache             ] - Created BLOB cache storage directory /tmp/tm_localtest-session-cluster-taskmanager-1-1/blobStorage
+    2025-02-20 08:18:30,349 INFO  org.apache.flink.runtime.blob.TransientBlobCache             ] - Created BLOB cache storage directory /tmp/tm_localtest-session-cluster-taskmanager-1-1/blobStorage
+    2025-02-20 08:18:30,352 INFO  org.apache.flink.runtime.externalresource.ExternalResourceUtils ] - Enabled external resources: ]
+    2025-02-20 08:18:30,352 INFO  org.apache.flink.runtime.security.token.DelegationTokenReceiverRepository ] - Loading delegation token receivers
+    2025-02-20 08:18:30,355 INFO  org.apache.flink.runtime.security.token.DelegationTokenReceiverRepository ] - Delegation token receiver HiveServer2 loaded and initialized
+    2025-02-20 08:18:30,356 INFO  org.apache.flink.runtime.security.token.DelegationTokenReceiverRepository ] - Delegation token receiver hadoopfs loaded and initialized
+    2025-02-20 08:18:30,356 INFO  org.apache.flink.runtime.security.token.DelegationTokenReceiverRepository ] - Delegation token receiver hbase loaded and initialized
+    2025-02-20 08:18:30,356 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID found, reusing it: external-resource-gpu
+    2025-02-20 08:18:30,356 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID found, reusing it: metrics-datadog
+    2025-02-20 08:18:30,356 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID found, reusing it: metrics-graphite
+    2025-02-20 08:18:30,356 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID found, reusing it: metrics-influx
+    2025-02-20 08:18:30,357 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID found, reusing it: metrics-jmx
+    2025-02-20 08:18:30,357 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID found, reusing it: metrics-prometheus
+    2025-02-20 08:18:30,357 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID found, reusing it: metrics-slf4j
+    2025-02-20 08:18:30,357 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID found, reusing it: metrics-statsd
+    2025-02-20 08:18:30,357 INFO  org.apache.flink.core.plugin.DefaultPluginManager            ] - Plugin loader with ID found, reusing it: flink-s3-fs-hadoop-1.20.0
+    2025-02-20 08:18:30,358 INFO  org.apache.flink.runtime.security.token.DelegationTokenReceiverRepository ] - Delegation token receiver s3-hadoop loaded and initialized
+    2025-02-20 08:18:30,358 INFO  org.apache.flink.runtime.security.token.DelegationTokenReceiverRepository ] - Delegation token receivers loaded successfully
+    2025-02-20 08:18:30,359 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner      ] - Starting TaskManager with ResourceID: localtest-session-cluster-taskmanager-1-1
+    2025-02-20 08:18:30,379 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerServices    ] - Temporary file directory '/tmp': total 245 GB, usable 62 GB (25.31% usable)
+    2025-02-20 08:18:30,382 INFO  org.apache.flink.runtime.io.disk.iomanager.IOManager         ] - Created a new FileChannelManager for spilling of task related data to disk (joins, sorting, ...). Used directories:
+        /tmp/flink-io-2a28f14b-f3fd-4b92-a790-a4a44a8b2444
+    2025-02-20 08:18:30,389 INFO  org.apache.flink.runtime.io.network.netty.NettyConfig        ] - NettyConfig [server address: /0.0.0.0, server port range: 0, ssl enabled: false, memory segment size (bytes): 32768, transport type: AUTO, number of server threads: 4 (manual), number of client threads: 4 (manual), server connect backlog: 0 (use Netty's default), client connect timeout (sec): 120, send/receive buffer size (bytes): 0 (use Netty's default)]
+    2025-02-20 08:18:30,438 INFO  org.apache.flink.runtime.io.network.NettyShuffleServiceFactory ] - Created a new FileChannelManager for storing result partitions of BLOCKING shuffles. Used directories:
+        /tmp/flink-netty-shuffle-5c5421fa-591d-4606-b490-6cbe5b71ad61
+    2025-02-20 08:18:30,520 INFO  org.apache.flink.runtime.io.network.buffer.NetworkBufferPool ] - Allocated 128 MB for network buffer pool (number of memory segments: 4096, bytes per segment: 32768).
+    2025-02-20 08:18:30,531 INFO  org.apache.flink.runtime.io.network.NettyShuffleEnvironment  ] - Starting the network environment and its components.
+    2025-02-20 08:18:30,576 INFO  org.apache.flink.runtime.io.network.netty.NettyClient        ] - Transport type 'auto': using EPOLL.
+    2025-02-20 08:18:30,577 INFO  org.apache.flink.runtime.io.network.netty.NettyClient        ] - Successful initialization (took 45 ms).
+    2025-02-20 08:18:30,580 INFO  org.apache.flink.runtime.io.network.netty.NettyServer        ] - Transport type 'auto': using EPOLL.
+    2025-02-20 08:18:30,602 INFO  org.apache.flink.runtime.io.network.netty.NettyServer        ] - Successful initialization (took 24 ms). Listening on SocketAddress /0:0:0:0:0:0:0:0%0:42095.
+    2025-02-20 08:18:30,602 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerServices    ] - TaskManager data connection initialized successfully; listening internally on port: 42095
+    2025-02-20 08:18:30,603 INFO  org.apache.flink.runtime.taskexecutor.KvStateService         ] - Starting the kvState service and its components.
+    2025-02-20 08:18:30,638 INFO  org.apache.flink.runtime.rpc.pekko.PekkoRpcService           ] - Starting RPC endpoint for org.apache.flink.runtime.taskexecutor.TaskExecutor at pekko://flink/user/rpc/taskmanager_0 .
+    2025-02-20 08:18:30,651 INFO  org.apache.flink.runtime.taskexecutor.DefaultJobLeaderService ] - Start job leader service.
+    2025-02-20 08:18:30,653 INFO  org.apache.flink.runtime.filecache.FileCache                 ] - User file cache uses directory /tmp/flink-dist-cache-1bbb5bca-5421-49ff-9019-b43577692c15
+    2025-02-20 08:18:30,655 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Connecting to ResourceManager pekko.tcp://flink@localtest-session-cluster.flinkcdc:6123/user/rpc/resourcemanager_*(00000000000000000000000000000000).
+    2025-02-20 08:18:30,799 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Resolved ResourceManager address, beginning registration
+    2025-02-20 08:18:30,854 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Successful registration at resource manager pekko.tcp://flink@localtest-session-cluster.flinkcdc:6123/user/rpc/resourcemanager_* under registration id 28299129f4cf99bda7612a606940dfad.
+    2025-02-20 08:18:30,870 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Receive slot request 4c517b4b4968a55450482a0d87c5af77 for job e12c802e143177bdd6823136c3646c1c from resource manager with leader id 00000000000000000000000000000000.
+    2025-02-20 08:18:30,871 INFO  org.apache.flink.runtime.taskexecutor.slot.TaskSlotTableImpl ] - Allocated slot for 4c517b4b4968a55450482a0d87c5af77 with resources ResourceProfile{cpuCores=1, taskHeapMemory=96.000mb (100663293 bytes), taskOffHeapMemory=0 bytes, managedMemory=128.000mb (134217730 bytes), networkMemory=32.000mb (33554432 bytes)}.
+    2025-02-20 08:18:30,875 INFO  org.apache.flink.runtime.taskexecutor.DefaultJobLeaderService ] - Add job e12c802e143177bdd6823136c3646c1c for job leader monitoring.
+    2025-02-20 08:18:30,877 INFO  org.apache.flink.runtime.taskexecutor.DefaultJobLeaderService ] - Try to register at job manager pekko.tcp://flink@localtest-session-cluster.flinkcdc:6123/user/rpc/jobmanager_2 with leader id 00000000-0000-0000-0000-000000000000.
+    2025-02-20 08:18:30,890 INFO  org.apache.flink.runtime.taskexecutor.DefaultJobLeaderService ] - Resolved JobManager address, beginning registration
+    2025-02-20 08:18:30,904 INFO  org.apache.flink.runtime.taskexecutor.DefaultJobLeaderService ] - Successful registration at job manager pekko.tcp://flink@localtest-session-cluster.flinkcdc:6123/user/rpc/jobmanager_2 for job e12c802e143177bdd6823136c3646c1c.
+    2025-02-20 08:18:30,905 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Establish JobManager connection for job e12c802e143177bdd6823136c3646c1c.
+    2025-02-20 08:18:30,907 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Offer reserved slots to the leader of job e12c802e143177bdd6823136c3646c1c.
+    2025-02-20 08:18:30,980 INFO  org.apache.flink.runtime.taskexecutor.slot.TaskSlotTableImpl ] - Activate slot 4c517b4b4968a55450482a0d87c5af77.
+    2025-02-20 08:18:30,995 INFO  org.apache.flink.runtime.state.changelog.StateChangelogStorageLoader ] - Creating a changelog storage with name 'memory'.
+    2025-02-20 08:18:31,001 INFO  org.apache.flink.runtime.state.TaskExecutorChannelStateExecutorFactoryManager ] - Creating the channel state executor factory for job id e12c802e143177bdd6823136c3646c1c
+    2025-02-20 08:18:31,010 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Received task Source: Custom Source (1/1)#0 (43202a2ada44e627b1d2fd8dc8c9eba7_10d8117fcd3a1e643cbc6fd935cbd6de_0_0), deploy into slot with allocation id 4c517b4b4968a55450482a0d87c5af77.
+    2025-02-20 08:18:31,012 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Source: Custom Source (1/1)#0 (43202a2ada44e627b1d2fd8dc8c9eba7_10d8117fcd3a1e643cbc6fd935cbd6de_0_0) switched from CREATED to DEPLOYING.
+    2025-02-20 08:18:31,015 INFO  org.apache.flink.runtime.taskexecutor.slot.TaskSlotTableImpl ] - Activate slot 4c517b4b4968a55450482a0d87c5af77.
+    2025-02-20 08:18:31,016 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Loading JAR files for task Source: Custom Source (1/1)#0 (43202a2ada44e627b1d2fd8dc8c9eba7_10d8117fcd3a1e643cbc6fd935cbd6de_0_0) [DEPLOYING].
+    2025-02-20 08:18:31,019 INFO  org.apache.flink.runtime.blob.BlobClient                     ] - Downloading e12c802e143177bdd6823136c3646c1c/p-e862f06b4f069557ef1a07a9aae51d865863ef01-30a919918d4bfc534c52472ab055a9e4 from localtest-session-cluster.flinkcdc/10.233.67.92:6124
+    2025-02-20 08:18:31,030 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Received task IcebergStreamWriter (1/1)#0 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_0), deploy into slot with allocation id 4c517b4b4968a55450482a0d87c5af77.
+    2025-02-20 08:18:31,031 INFO  org.apache.flink.runtime.taskexecutor.slot.TaskSlotTableImpl ] - Activate slot 4c517b4b4968a55450482a0d87c5af77.
+    2025-02-20 08:18:31,031 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - IcebergStreamWriter (1/1)#0 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_0) switched from CREATED to DEPLOYING.
+    2025-02-20 08:18:31,031 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Loading JAR files for task IcebergStreamWriter (1/1)#0 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_0) [DEPLOYING].
+    2025-02-20 08:18:31,035 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Received task IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#0 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_0), deploy into slot with allocation id 4c517b4b4968a55450482a0d87c5af77.
+    2025-02-20 08:18:31,035 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#0 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_0) switched from CREATED to DEPLOYING.
+    2025-02-20 08:18:31,036 INFO  org.apache.flink.runtime.taskexecutor.slot.TaskSlotTableImpl ] - Activate slot 4c517b4b4968a55450482a0d87c5af77.
+    2025-02-20 08:18:31,036 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Loading JAR files for task IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#0 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_0) [DEPLOYING].
+    2025-02-20 08:18:31,061 INFO  org.apache.flink.streaming.runtime.tasks.StreamTask          ] - State backend is set to heap memory org.apache.flink.runtime.state.hashmap.HashMapStateBackend@40332439
+    2025-02-20 08:18:31,061 INFO  org.apache.flink.streaming.runtime.tasks.StreamTask          ] - State backend is set to heap memory org.apache.flink.runtime.state.hashmap.HashMapStateBackend@5d381f9f
+    2025-02-20 08:18:31,061 INFO  org.apache.flink.runtime.state.StateBackendLoader            ] - State backend loader loads the state backend as HashMapStateBackend
+    2025-02-20 08:18:31,061 INFO  org.apache.flink.runtime.state.StateBackendLoader            ] - State backend loader loads the state backend as HashMapStateBackend
+    2025-02-20 08:18:31,066 INFO  org.apache.flink.streaming.runtime.tasks.StreamTask          ] - Using job/cluster config to configure application-defined checkpoint storage: org.apache.flink.runtime.state.storage.FileSystemCheckpointStorage@838de6a0
+    2025-02-20 08:18:31,066 INFO  org.apache.flink.streaming.runtime.tasks.StreamTask          ] - Using job/cluster config to configure application-defined checkpoint storage: org.apache.flink.runtime.state.storage.FileSystemCheckpointStorage@838de6a0
+    2025-02-20 08:18:31,067 WARN  org.apache.flink.configuration.Configuration                 ] - Config uses deprecated configuration key 'state.savepoints.dir' instead of proper key 'execution.checkpointing.savepoint-dir'
+    2025-02-20 08:18:31,067 WARN  org.apache.flink.configuration.Configuration                 ] - Config uses deprecated configuration key 'state.savepoints.dir' instead of proper key 'execution.checkpointing.savepoint-dir'
+    2025-02-20 08:18:31,066 WARN  org.apache.flink.runtime.taskmanager.Task                    ] - Source: Custom Source (1/1)#0 (43202a2ada44e627b1d2fd8dc8c9eba7_10d8117fcd3a1e643cbc6fd935cbd6de_0_0) switched from DEPLOYING to FAILED with failure cause:
+    org.apache.flink.streaming.runtime.tasks.StreamTaskException: Could not instantiate outputs in order.
+        at org.apache.flink.streaming.api.graph.StreamConfig.getVertexNonChainedOutputs(StreamConfig.java:590) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.StreamTask.createRecordWriters(StreamTask.java:1743) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.StreamTask.createRecordWriterDelegate(StreamTask.java:1727) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.StreamTask.<init>(StreamTask.java:428) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.StreamTask.<init>(StreamTask.java:380) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.SourceStreamTask.<init>(SourceStreamTask.java:108) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.SourceStreamTask.<init>(SourceStreamTask.java:104) ~[flink-dist-1.20.0.jar:1.20.0]
+        at jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:?]
+        at jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(Unknown Source) ~[?:?]
+        at jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(Unknown Source) ~[?:?]
+        at java.lang.reflect.Constructor.newInstance(Unknown Source) ~[?:?]
+        at org.apache.flink.runtime.taskmanager.Task.loadAndInstantiateInvokable(Task.java:1636) [flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.doRun(Task.java:749) [flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.run(Task.java:575) [flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.Thread.run(Unknown Source) [?:?]
+    Caused by: java.lang.ClassNotFoundException: org.apache.iceberg.flink.sink.EqualityFieldKeySelector
+        at java.net.URLClassLoader.findClass(Unknown Source) ~[?:?]
+        at java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoader.loadClassWithoutExceptionHandling(FlinkUserCodeClassLoader.java:67) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.ChildFirstClassLoader.loadClassWithoutExceptionHandling(ChildFirstClassLoader.java:74) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.FlinkUserCodeClassLoader.loadClass(FlinkUserCodeClassLoader.java:51) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoaders$SafetyNetWrapperClassLoader.loadClass(FlinkUserCodeClassLoaders.java:197) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.Class.forName0(Native Method) ~[?:?]
+        at java.lang.Class.forName(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil$ClassLoaderObjectInputStream.resolveClass(InstantiationUtil.java:78) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.io.ObjectInputStream.readNonProxyDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readClassDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.defaultReadFields(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readSerialData(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.defaultReadFields(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readSerialData(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at java.util.ArrayList.readObject(Unknown Source) ~[?:?]
+        at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+        at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[?:?]
+        at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[?:?]
+        at java.lang.reflect.Method.invoke(Unknown Source) ~[?:?]
+        at java.io.ObjectStreamClass.invokeReadObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readSerialData(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:533) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:521) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.readObjectFromConfig(InstantiationUtil.java:475) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.api.graph.StreamConfig.getVertexNonChainedOutputs(StreamConfig.java:586) ~[flink-dist-1.20.0.jar:1.20.0]
+        ... 14 more
+    2025-02-20 08:18:31,071 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Freeing task resources for Source: Custom Source (1/1)#0 (43202a2ada44e627b1d2fd8dc8c9eba7_10d8117fcd3a1e643cbc6fd935cbd6de_0_0).
+    2025-02-20 08:18:31,078 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Un-registering task and sending final execution state FAILED to JobManager for task Source: Custom Source (1/1)#0 43202a2ada44e627b1d2fd8dc8c9eba7_10d8117fcd3a1e643cbc6fd935cbd6de_0_0.
+    2025-02-20 08:18:31,118 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Attempting to cancel task IcebergStreamWriter (1/1)#0 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_0).
+    2025-02-20 08:18:31,118 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - IcebergStreamWriter (1/1)#0 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_0) switched from DEPLOYING to CANCELING.
+    2025-02-20 08:18:31,118 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Attempting to cancel task IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#0 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_0).
+    2025-02-20 08:18:31,119 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#0 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_0) switched from DEPLOYING to CANCELING.
+    2025-02-20 08:18:31,124 INFO  org.apache.flink.fs.s3.common.token.AbstractS3DelegationTokenReceiver ] - Updating Hadoop configuration
+    2025-02-20 08:18:31,125 INFO  org.apache.flink.fs.s3.common.token.AbstractS3DelegationTokenReceiver ] - Updated Hadoop configuration successfully
+    2025-02-20 08:18:31,250 WARN  org.apache.hadoop.metrics2.impl.MetricsConfig                ] - Cannot locate configuration: tried hadoop-metrics2-s3a-file-system.properties,hadoop-metrics2.properties
+    2025-02-20 08:18:31,266 INFO  org.apache.hadoop.metrics2.impl.MetricsSystemImpl            ] - Scheduled Metric snapshot period at 10 second(s).
+    2025-02-20 08:18:31,266 INFO  org.apache.hadoop.metrics2.impl.MetricsSystemImpl            ] - s3a-file-system metrics system started
+    2025-02-20 08:18:31,292 WARN  org.apache.hadoop.util.NativeCodeLoader                      ] - Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+    2025-02-20 08:18:31,822 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#0 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_0) switched from CANCELING to CANCELED.
+    2025-02-20 08:18:31,822 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - IcebergStreamWriter (1/1)#0 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_0) switched from CANCELING to CANCELED.
+    2025-02-20 08:18:31,822 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Freeing task resources for IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#0 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_0).
+    2025-02-20 08:18:31,822 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Freeing task resources for IcebergStreamWriter (1/1)#0 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_0).
+    2025-02-20 08:18:31,823 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Un-registering task and sending final execution state CANCELED to JobManager for task IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#0 43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_0.
+    2025-02-20 08:18:31,824 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Un-registering task and sending final execution state CANCELED to JobManager for task IcebergStreamWriter (1/1)#0 43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_0.
+    2025-02-20 08:18:32,129 INFO  org.apache.flink.runtime.taskexecutor.slot.TaskSlotTableImpl ] - Activate slot 4c517b4b4968a55450482a0d87c5af77.
+    2025-02-20 08:18:32,131 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Received task Source: Custom Source (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_10d8117fcd3a1e643cbc6fd935cbd6de_0_1), deploy into slot with allocation id 4c517b4b4968a55450482a0d87c5af77.
+    2025-02-20 08:18:32,132 INFO  org.apache.flink.runtime.taskexecutor.slot.TaskSlotTableImpl ] - Activate slot 4c517b4b4968a55450482a0d87c5af77.
+    2025-02-20 08:18:32,132 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Source: Custom Source (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_10d8117fcd3a1e643cbc6fd935cbd6de_0_1) switched from CREATED to DEPLOYING.
+    2025-02-20 08:18:32,132 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Loading JAR files for task Source: Custom Source (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_10d8117fcd3a1e643cbc6fd935cbd6de_0_1) [DEPLOYING].
+    2025-02-20 08:18:32,134 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Received task IcebergStreamWriter (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_1), deploy into slot with allocation id 4c517b4b4968a55450482a0d87c5af77.
+    2025-02-20 08:18:32,135 INFO  org.apache.flink.runtime.taskexecutor.slot.TaskSlotTableImpl ] - Activate slot 4c517b4b4968a55450482a0d87c5af77.
+    2025-02-20 08:18:32,135 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - IcebergStreamWriter (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_1) switched from CREATED to DEPLOYING.
+    2025-02-20 08:18:32,135 WARN  org.apache.flink.runtime.taskmanager.Task                    ] - Source: Custom Source (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_10d8117fcd3a1e643cbc6fd935cbd6de_0_1) switched from DEPLOYING to FAILED with failure cause:
+    org.apache.flink.streaming.runtime.tasks.StreamTaskException: Could not instantiate outputs in order.
+        at org.apache.flink.streaming.api.graph.StreamConfig.getVertexNonChainedOutputs(StreamConfig.java:590) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.StreamTask.createRecordWriters(StreamTask.java:1743) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.StreamTask.createRecordWriterDelegate(StreamTask.java:1727) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.StreamTask.<init>(StreamTask.java:428) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.StreamTask.<init>(StreamTask.java:380) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.SourceStreamTask.<init>(SourceStreamTask.java:108) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.SourceStreamTask.<init>(SourceStreamTask.java:104) ~[flink-dist-1.20.0.jar:1.20.0]
+        at jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:?]
+        at jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(Unknown Source) ~[?:?]
+        at jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(Unknown Source) ~[?:?]
+        at java.lang.reflect.Constructor.newInstance(Unknown Source) ~[?:?]
+        at org.apache.flink.runtime.taskmanager.Task.loadAndInstantiateInvokable(Task.java:1636) [flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.doRun(Task.java:749) [flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.run(Task.java:575) [flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.Thread.run(Unknown Source) [?:?]
+    Caused by: java.lang.ClassNotFoundException: org.apache.iceberg.flink.sink.EqualityFieldKeySelector
+        at java.net.URLClassLoader.findClass(Unknown Source) ~[?:?]
+        at java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoader.loadClassWithoutExceptionHandling(FlinkUserCodeClassLoader.java:67) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.ChildFirstClassLoader.loadClassWithoutExceptionHandling(ChildFirstClassLoader.java:74) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.FlinkUserCodeClassLoader.loadClass(FlinkUserCodeClassLoader.java:51) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoaders$SafetyNetWrapperClassLoader.loadClass(FlinkUserCodeClassLoaders.java:197) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.Class.forName0(Native Method) ~[?:?]
+        at java.lang.Class.forName(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil$ClassLoaderObjectInputStream.resolveClass(InstantiationUtil.java:78) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.io.ObjectInputStream.readNonProxyDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readClassDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.defaultReadFields(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readSerialData(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.defaultReadFields(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readSerialData(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at java.util.ArrayList.readObject(Unknown Source) ~[?:?]
+        at jdk.internal.reflect.GeneratedMethodAccessor17.invoke(Unknown Source) ~[?:?]
+        at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[?:?]
+        at java.lang.reflect.Method.invoke(Unknown Source) ~[?:?]
+        at java.io.ObjectStreamClass.invokeReadObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readSerialData(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:533) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:521) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.readObjectFromConfig(InstantiationUtil.java:475) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.api.graph.StreamConfig.getVertexNonChainedOutputs(StreamConfig.java:586) ~[flink-dist-1.20.0.jar:1.20.0]
+        ... 14 more
+    2025-02-20 08:18:32,135 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Loading JAR files for task IcebergStreamWriter (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_1) [DEPLOYING].
+    2025-02-20 08:18:32,135 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Freeing task resources for Source: Custom Source (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_10d8117fcd3a1e643cbc6fd935cbd6de_0_1).
+    2025-02-20 08:18:32,137 INFO  org.apache.flink.streaming.runtime.tasks.StreamTask          ] - State backend is set to heap memory org.apache.flink.runtime.state.hashmap.HashMapStateBackend@5a6c5064
+    2025-02-20 08:18:32,137 INFO  org.apache.flink.runtime.state.StateBackendLoader            ] - State backend loader loads the state backend as HashMapStateBackend
+    2025-02-20 08:18:32,138 INFO  org.apache.flink.streaming.runtime.tasks.StreamTask          ] - Using job/cluster config to configure application-defined checkpoint storage: org.apache.flink.runtime.state.storage.FileSystemCheckpointStorage@838de6a0
+    2025-02-20 08:18:32,138 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Received task IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_1), deploy into slot with allocation id 4c517b4b4968a55450482a0d87c5af77.
+    2025-02-20 08:18:32,139 WARN  org.apache.flink.configuration.Configuration                 ] - Config uses deprecated configuration key 'state.savepoints.dir' instead of proper key 'execution.checkpointing.savepoint-dir'
+    2025-02-20 08:18:32,139 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - IcebergStreamWriter (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_1) switched from DEPLOYING to INITIALIZING.
+    2025-02-20 08:18:32,139 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Un-registering task and sending final execution state FAILED to JobManager for task Source: Custom Source (1/1)#1 43202a2ada44e627b1d2fd8dc8c9eba7_10d8117fcd3a1e643cbc6fd935cbd6de_0_1.
+    2025-02-20 08:18:32,139 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_1) switched from CREATED to DEPLOYING.
+    2025-02-20 08:18:32,139 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Loading JAR files for task IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_1) [DEPLOYING].
+    2025-02-20 08:18:32,140 INFO  org.apache.flink.streaming.runtime.tasks.StreamTask          ] - State backend is set to heap memory org.apache.flink.runtime.state.hashmap.HashMapStateBackend@7d305d82
+    2025-02-20 08:18:32,141 INFO  org.apache.flink.runtime.state.StateBackendLoader            ] - State backend loader loads the state backend as HashMapStateBackend
+    2025-02-20 08:18:32,141 INFO  org.apache.flink.streaming.runtime.tasks.StreamTask          ] - Using job/cluster config to configure application-defined checkpoint storage: org.apache.flink.runtime.state.storage.FileSystemCheckpointStorage@838de6a0
+    2025-02-20 08:18:32,141 WARN  org.apache.flink.configuration.Configuration                 ] - Config uses deprecated configuration key 'state.savepoints.dir' instead of proper key 'execution.checkpointing.savepoint-dir'
+    2025-02-20 08:18:32,141 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_1) switched from DEPLOYING to INITIALIZING.
+    2025-02-20 08:18:32,148 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Attempting to cancel task IcebergStreamWriter (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_1).
+    2025-02-20 08:18:32,148 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - IcebergStreamWriter (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_1) switched from INITIALIZING to CANCELING.
+    2025-02-20 08:18:32,148 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Triggering cancellation of task code IcebergStreamWriter (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_1).
+    2025-02-20 08:18:32,151 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Attempting to cancel task IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_1).
+    2025-02-20 08:18:32,151 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_1) switched from INITIALIZING to CANCELING.
+    2025-02-20 08:18:32,151 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Triggering cancellation of task code IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_1).
+    2025-02-20 08:18:32,153 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Attempting to cancel task IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_1).
+    2025-02-20 08:18:32,153 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Task IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#1 is already in state CANCELING
+    2025-02-20 08:18:32,154 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Attempting to fail task externally IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_1).
+    2025-02-20 08:18:32,154 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Task IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#1 is already in state CANCELING
+    2025-02-20 08:18:32,159 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_1) switched from CANCELING to CANCELED.
+    2025-02-20 08:18:32,159 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Freeing task resources for IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_1).
+    2025-02-20 08:18:32,160 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Un-registering task and sending final execution state CANCELED to JobManager for task IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#1 43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_1.
+    2025-02-20 08:18:32,161 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - IcebergStreamWriter (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_1) switched from CANCELING to CANCELED.
+    2025-02-20 08:18:32,161 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Freeing task resources for IcebergStreamWriter (1/1)#1 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_1).
+    2025-02-20 08:18:32,161 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Un-registering task and sending final execution state CANCELED to JobManager for task IcebergStreamWriter (1/1)#1 43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_1.
+        at org.apache.flink.util.FlinkUserCodeClassLoader.loadClass(FlinkUserCodeClassLoader.java:51) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoaders$SafetyNetWrapperClassLoader.loadClass(FlinkUserCodeClassLoaders.java:197) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.Class.forName0(Native Method) ~[?:?]
+        at java.lang.Class.forName(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil$ClassLoaderObjectInputStream.resolveClass(InstantiationUtil.java:78) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.io.ObjectInputStream.readNonProxyDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readClassDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.defaultReadFields(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readSerialData(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:533) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:521) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.readObjectFromConfig(InstantiationUtil.java:475) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.api.graph.StreamConfig.getStreamOperatorFactory(StreamConfig.java:400) ~[flink-dist-1.20.0.jar:1.20.0]
+        ... 9 more
+    2025-02-20 08:18:33,755 WARN  org.apache.flink.runtime.taskmanager.Task                    ] - IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#2 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_2) switched from INITIALIZING to FAILED with failure cause:
+    org.apache.flink.streaming.runtime.tasks.StreamTaskException: Cannot load user class: org.apache.iceberg.flink.sink.IcebergFilesCommitter
+    ClassLoader info: URL ClassLoader:
+        file: '/tmp/tm_localtest-session-cluster-taskmanager-1-1/blobStorage/job_e12c802e143177bdd6823136c3646c1c/blob_p-e862f06b4f069557ef1a07a9aae51d865863ef01-30a919918d4bfc534c52472ab055a9e4' (valid JAR)
+    Class not resolvable through given classloader.
+        at org.apache.flink.streaming.api.graph.StreamConfig.getStreamOperatorFactory(StreamConfig.java:414) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.OperatorChain.<init>(OperatorChain.java:169) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.RegularOperatorChain.<init>(RegularOperatorChain.java:60) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.StreamTask.restoreInternal(StreamTask.java:789) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.StreamTask.restore(StreamTask.java:771) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.runWithSystemExitMonitoring(Task.java:970) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.restoreAndInvoke(Task.java:939) [flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.doRun(Task.java:763) [flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.run(Task.java:575) [flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.Thread.run(Unknown Source) [?:?]
+    Caused by: java.lang.ClassNotFoundException: org.apache.iceberg.flink.sink.IcebergFilesCommitter
+        at java.net.URLClassLoader.findClass(Unknown Source) ~[?:?]
+        at java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoader.loadClassWithoutExceptionHandling(FlinkUserCodeClassLoader.java:67) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.ChildFirstClassLoader.loadClassWithoutExceptionHandling(ChildFirstClassLoader.java:74) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.FlinkUserCodeClassLoader.loadClass(FlinkUserCodeClassLoader.java:51) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoaders$SafetyNetWrapperClassLoader.loadClass(FlinkUserCodeClassLoaders.java:197) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.Class.forName0(Native Method) ~[?:?]
+        at java.lang.Class.forName(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil$ClassLoaderObjectInputStream.resolveClass(InstantiationUtil.java:78) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.io.ObjectInputStream.readNonProxyDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readClassDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.defaultReadFields(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readSerialData(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:533) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:521) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.readObjectFromConfig(InstantiationUtil.java:475) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.api.graph.StreamConfig.getStreamOperatorFactory(StreamConfig.java:400) ~[flink-dist-1.20.0.jar:1.20.0]
+        ... 9 more
+    2025-02-20 08:18:33,755 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Freeing task resources for IcebergStreamWriter (1/1)#2 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_2).
+    2025-02-20 08:18:33,756 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Freeing task resources for IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#2 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_2).
+    2025-02-20 08:18:33,758 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Un-registering task and sending final execution state FAILED to JobManager for task IcebergStreamWriter (1/1)#2 43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_2.
+    2025-02-20 08:18:33,760 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Un-registering task and sending final execution state FAILED to JobManager for task IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#2 43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_2.
+    2025-02-20 08:18:33,762 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Cannot find task to fail for execution 43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_2 with exception:
+    org.apache.flink.runtime.jobmaster.ExecutionGraphException: The execution attempt 43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_2 was not found.
+        at org.apache.flink.runtime.jobmaster.JobMaster.updateTaskExecutionState(JobMaster.java:521) ~[flink-dist-1.20.0.jar:1.20.0]
+        at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+        at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[?:?]
+        at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[?:?]
+        at java.lang.reflect.Method.invoke(Unknown Source) ~[?:?]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.lambda$handleRpcInvocation$1(PekkoRpcActor.java:318) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.concurrent.ClassLoadingUtils.runWithContextClassLoader(ClassLoadingUtils.java:83) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.handleRpcInvocation(PekkoRpcActor.java:316) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.handleRpcMessage(PekkoRpcActor.java:229) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.FencedPekkoRpcActor.handleRpcMessage(FencedPekkoRpcActor.java:88) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.handleMessage(PekkoRpcActor.java:174) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.japi.pf.UnitCaseStatement.apply(CaseStatements.scala:33) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.japi.pf.UnitCaseStatement.apply(CaseStatements.scala:29) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction.applyOrElse(PartialFunction.scala:127) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction.applyOrElse$(PartialFunction.scala:126) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.japi.pf.UnitCaseStatement.applyOrElse(CaseStatements.scala:29) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:175) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:176) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:176) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.Actor.aroundReceive(Actor.scala:547) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.Actor.aroundReceive$(Actor.scala:545) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.AbstractActor.aroundReceive(AbstractActor.scala:229) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.ActorCell.receiveMessage(ActorCell.scala:590) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.ActorCell.invoke(ActorCell.scala:557) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.dispatch.Mailbox.processMailbox(Mailbox.scala:280) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.dispatch.Mailbox.run(Mailbox.scala:241) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.dispatch.Mailbox.exec(Mailbox.scala:253) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at java.util.concurrent.ForkJoinTask.doExec(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinPool.scan(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinPool.runWorker(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinWorkerThread.run(Unknown Source) [?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoader.loadClass(FlinkUserCodeClassLoader.java:51) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoaders$SafetyNetWrapperClassLoader.loadClass(FlinkUserCodeClassLoaders.java:197) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.Class.forName0(Native Method) ~[?:?]
+        at java.lang.Class.forName(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil$ClassLoaderObjectInputStream.resolveClass(InstantiationUtil.java:78) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.io.ObjectInputStream.readNonProxyDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readClassDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.defaultReadFields(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readSerialData(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:533) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:521) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.readObjectFromConfig(InstantiationUtil.java:475) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.api.graph.StreamConfig.getStreamOperatorFactory(StreamConfig.java:400) ~[flink-dist-1.20.0.jar:1.20.0]
+        ... 9 more
+    2025-02-20 08:18:36,126 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Freeing task resources for IcebergStreamWriter (1/1)#3 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_3).
+    2025-02-20 08:18:36,126 WARN  org.apache.flink.runtime.taskmanager.Task                    ] - IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#3 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_3) switched from INITIALIZING to FAILED with failure cause:
+    org.apache.flink.streaming.runtime.tasks.StreamTaskException: Cannot load user class: org.apache.iceberg.flink.sink.IcebergFilesCommitter
+    ClassLoader info: URL ClassLoader:
+        file: '/tmp/tm_localtest-session-cluster-taskmanager-1-1/blobStorage/job_e12c802e143177bdd6823136c3646c1c/blob_p-e862f06b4f069557ef1a07a9aae51d865863ef01-30a919918d4bfc534c52472ab055a9e4' (valid JAR)
+    Class not resolvable through given classloader.
+        at org.apache.flink.streaming.api.graph.StreamConfig.getStreamOperatorFactory(StreamConfig.java:414) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.OperatorChain.<init>(OperatorChain.java:169) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.RegularOperatorChain.<init>(RegularOperatorChain.java:60) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.StreamTask.restoreInternal(StreamTask.java:789) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.StreamTask.restore(StreamTask.java:771) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.runWithSystemExitMonitoring(Task.java:970) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.restoreAndInvoke(Task.java:939) [flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.doRun(Task.java:763) [flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.run(Task.java:575) [flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.Thread.run(Unknown Source) [?:?]
+    Caused by: java.lang.ClassNotFoundException: org.apache.iceberg.flink.sink.IcebergFilesCommitter
+        at java.net.URLClassLoader.findClass(Unknown Source) ~[?:?]
+        at java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoader.loadClassWithoutExceptionHandling(FlinkUserCodeClassLoader.java:67) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.ChildFirstClassLoader.loadClassWithoutExceptionHandling(ChildFirstClassLoader.java:74) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.FlinkUserCodeClassLoader.loadClass(FlinkUserCodeClassLoader.java:51) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoaders$SafetyNetWrapperClassLoader.loadClass(FlinkUserCodeClassLoaders.java:197) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.Class.forName0(Native Method) ~[?:?]
+        at java.lang.Class.forName(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil$ClassLoaderObjectInputStream.resolveClass(InstantiationUtil.java:78) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.io.ObjectInputStream.readNonProxyDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readClassDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.defaultReadFields(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readSerialData(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:533) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:521) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.readObjectFromConfig(InstantiationUtil.java:475) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.api.graph.StreamConfig.getStreamOperatorFactory(StreamConfig.java:400) ~[flink-dist-1.20.0.jar:1.20.0]
+        ... 9 more
+    2025-02-20 08:18:36,127 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Freeing task resources for IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#3 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_3).
+    2025-02-20 08:18:36,127 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Un-registering task and sending final execution state FAILED to JobManager for task IcebergStreamWriter (1/1)#3 43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_3.
+    2025-02-20 08:18:36,128 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Un-registering task and sending final execution state FAILED to JobManager for task IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#3 43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_3.
+    2025-02-20 08:18:36,131 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Cannot find task to fail for execution 43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_3 with exception:
+    org.apache.flink.runtime.jobmaster.ExecutionGraphException: The execution attempt 43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_3 was not found.
+        at org.apache.flink.runtime.jobmaster.JobMaster.updateTaskExecutionState(JobMaster.java:521) ~[flink-dist-1.20.0.jar:1.20.0]
+        at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+        at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[?:?]
+        at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[?:?]
+        at java.lang.reflect.Method.invoke(Unknown Source) ~[?:?]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.lambda$handleRpcInvocation$1(PekkoRpcActor.java:318) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.concurrent.ClassLoadingUtils.runWithContextClassLoader(ClassLoadingUtils.java:83) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.handleRpcInvocation(PekkoRpcActor.java:316) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.handleRpcMessage(PekkoRpcActor.java:229) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.FencedPekkoRpcActor.handleRpcMessage(FencedPekkoRpcActor.java:88) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.handleMessage(PekkoRpcActor.java:174) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.japi.pf.UnitCaseStatement.apply(CaseStatements.scala:33) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.japi.pf.UnitCaseStatement.apply(CaseStatements.scala:29) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction.applyOrElse(PartialFunction.scala:127) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction.applyOrElse$(PartialFunction.scala:126) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.japi.pf.UnitCaseStatement.applyOrElse(CaseStatements.scala:29) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:175) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:176) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:176) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.Actor.aroundReceive(Actor.scala:547) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.Actor.aroundReceive$(Actor.scala:545) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.AbstractActor.aroundReceive(AbstractActor.scala:229) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.ActorCell.receiveMessage(ActorCell.scala:590) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.ActorCell.invoke(ActorCell.scala:557) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.dispatch.Mailbox.processMailbox(Mailbox.scala:280) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.dispatch.Mailbox.run(Mailbox.scala:241) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.dispatch.Mailbox.exec(Mailbox.scala:253) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at java.util.concurrent.ForkJoinTask.doExec(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinPool.scan(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinPool.runWorker(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinWorkerThread.run(Unknown Source) [?:?]
+        at org.apache.flink.util.ChildFirstClassLoader.loadClassWithoutExceptionHandling(ChildFirstClassLoader.java:74) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.FlinkUserCodeClassLoader.loadClass(FlinkUserCodeClassLoader.java:51) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoaders$SafetyNetWrapperClassLoader.loadClass(FlinkUserCodeClassLoaders.java:197) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.Class.forName0(Native Method) ~[?:?]
+        at java.lang.Class.forName(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil$ClassLoaderObjectInputStream.resolveClass(InstantiationUtil.java:78) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.io.ObjectInputStream.readNonProxyDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readClassDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.defaultReadFields(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readSerialData(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:533) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:521) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.readObjectFromConfig(InstantiationUtil.java:475) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.api.graph.StreamConfig.getStreamOperatorFactory(StreamConfig.java:400) ~[flink-dist-1.20.0.jar:1.20.0]
+        ... 9 more
+    2025-02-20 08:18:39,772 WARN  org.apache.flink.runtime.taskmanager.Task                    ] - IcebergStreamWriter (1/1)#4 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_4) switched from INITIALIZING to FAILED with failure cause:
+    org.apache.flink.streaming.runtime.tasks.StreamTaskException: Cannot load user class: org.apache.iceberg.flink.sink.IcebergStreamWriter
+    ClassLoader info: URL ClassLoader:
+        file: '/tmp/tm_localtest-session-cluster-taskmanager-1-1/blobStorage/job_e12c802e143177bdd6823136c3646c1c/blob_p-e862f06b4f069557ef1a07a9aae51d865863ef01-30a919918d4bfc534c52472ab055a9e4' (valid JAR)
+    Class not resolvable through given classloader.
+        at org.apache.flink.streaming.api.graph.StreamConfig.getStreamOperatorFactory(StreamConfig.java:414) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.OperatorChain.<init>(OperatorChain.java:169) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.RegularOperatorChain.<init>(RegularOperatorChain.java:60) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.StreamTask.restoreInternal(StreamTask.java:789) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.StreamTask.restore(StreamTask.java:771) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.runWithSystemExitMonitoring(Task.java:970) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.restoreAndInvoke(Task.java:939) [flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.doRun(Task.java:763) [flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.run(Task.java:575) [flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.Thread.run(Unknown Source) [?:?]
+    Caused by: java.lang.ClassNotFoundException: org.apache.iceberg.flink.sink.IcebergStreamWriter
+        at java.net.URLClassLoader.findClass(Unknown Source) ~[?:?]
+        at java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoader.loadClassWithoutExceptionHandling(FlinkUserCodeClassLoader.java:67) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.ChildFirstClassLoader.loadClassWithoutExceptionHandling(ChildFirstClassLoader.java:74) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.FlinkUserCodeClassLoader.loadClass(FlinkUserCodeClassLoader.java:51) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoaders$SafetyNetWrapperClassLoader.loadClass(FlinkUserCodeClassLoaders.java:197) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.Class.forName0(Native Method) ~[?:?]
+        at java.lang.Class.forName(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil$ClassLoaderObjectInputStream.resolveClass(InstantiationUtil.java:78) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.io.ObjectInputStream.readNonProxyDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readClassDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.defaultReadFields(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readSerialData(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:533) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:521) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.readObjectFromConfig(InstantiationUtil.java:475) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.api.graph.StreamConfig.getStreamOperatorFactory(StreamConfig.java:400) ~[flink-dist-1.20.0.jar:1.20.0]
+        ... 9 more
+    2025-02-20 08:18:39,772 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Freeing task resources for IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#4 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_4).
+    2025-02-20 08:18:39,772 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Freeing task resources for IcebergStreamWriter (1/1)#4 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_4).
+    2025-02-20 08:18:39,773 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Un-registering task and sending final execution state FAILED to JobManager for task IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#4 43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_4.
+    2025-02-20 08:18:39,774 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Un-registering task and sending final execution state FAILED to JobManager for task IcebergStreamWriter (1/1)#4 43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_4.
+    2025-02-20 08:18:39,778 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Cannot find task to fail for execution 43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_4 with exception:
+    org.apache.flink.runtime.jobmaster.ExecutionGraphException: The execution attempt 43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_4 was not found.
+        at org.apache.flink.runtime.jobmaster.JobMaster.updateTaskExecutionState(JobMaster.java:521) ~[flink-dist-1.20.0.jar:1.20.0]
+        at jdk.internal.reflect.GeneratedMethodAccessor95.invoke(Unknown Source) ~[?:?]
+        at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[?:?]
+        at java.lang.reflect.Method.invoke(Unknown Source) ~[?:?]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.lambda$handleRpcInvocation$1(PekkoRpcActor.java:318) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.concurrent.ClassLoadingUtils.runWithContextClassLoader(ClassLoadingUtils.java:83) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.handleRpcInvocation(PekkoRpcActor.java:316) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.handleRpcMessage(PekkoRpcActor.java:229) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.FencedPekkoRpcActor.handleRpcMessage(FencedPekkoRpcActor.java:88) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.handleMessage(PekkoRpcActor.java:174) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.japi.pf.UnitCaseStatement.apply(CaseStatements.scala:33) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.japi.pf.UnitCaseStatement.apply(CaseStatements.scala:29) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction.applyOrElse(PartialFunction.scala:127) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction.applyOrElse$(PartialFunction.scala:126) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.japi.pf.UnitCaseStatement.applyOrElse(CaseStatements.scala:29) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:175) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:176) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:176) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.Actor.aroundReceive(Actor.scala:547) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.Actor.aroundReceive$(Actor.scala:545) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.AbstractActor.aroundReceive(AbstractActor.scala:229) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.ActorCell.receiveMessage(ActorCell.scala:590) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.ActorCell.invoke(ActorCell.scala:557) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.dispatch.Mailbox.processMailbox(Mailbox.scala:280) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.dispatch.Mailbox.run(Mailbox.scala:241) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.dispatch.Mailbox.exec(Mailbox.scala:253) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at java.util.concurrent.ForkJoinTask.doExec(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinPool.scan(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinPool.runWorker(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinWorkerThread.run(Unknown Source) [?:?]
+        at org.apache.flink.util.ChildFirstClassLoader.loadClassWithoutExceptionHandling(ChildFirstClassLoader.java:74) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.FlinkUserCodeClassLoader.loadClass(FlinkUserCodeClassLoader.java:51) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoaders$SafetyNetWrapperClassLoader.loadClass(FlinkUserCodeClassLoaders.java:197) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.Class.forName0(Native Method) ~[?:?]
+        at java.lang.Class.forName(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil$ClassLoaderObjectInputStream.resolveClass(InstantiationUtil.java:78) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.io.ObjectInputStream.readNonProxyDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readClassDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.defaultReadFields(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readSerialData(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:533) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:521) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.readObjectFromConfig(InstantiationUtil.java:475) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.api.graph.StreamConfig.getStreamOperatorFactory(StreamConfig.java:400) ~[flink-dist-1.20.0.jar:1.20.0]
+        ... 9 more
+    2025-02-20 08:18:44,644 WARN  org.apache.flink.runtime.taskmanager.Task                    ] - IcebergStreamWriter (1/1)#5 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_5) switched from INITIALIZING to FAILED with failure cause:
+    org.apache.flink.streaming.runtime.tasks.StreamTaskException: Cannot load user class: org.apache.iceberg.flink.sink.IcebergStreamWriter
+    ClassLoader info: URL ClassLoader:
+        file: '/tmp/tm_localtest-session-cluster-taskmanager-1-1/blobStorage/job_e12c802e143177bdd6823136c3646c1c/blob_p-e862f06b4f069557ef1a07a9aae51d865863ef01-30a919918d4bfc534c52472ab055a9e4' (valid JAR)
+    Class not resolvable through given classloader.
+        at org.apache.flink.streaming.api.graph.StreamConfig.getStreamOperatorFactory(StreamConfig.java:414) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.OperatorChain.<init>(OperatorChain.java:169) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.RegularOperatorChain.<init>(RegularOperatorChain.java:60) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.StreamTask.restoreInternal(StreamTask.java:789) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.StreamTask.restore(StreamTask.java:771) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.runWithSystemExitMonitoring(Task.java:970) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.restoreAndInvoke(Task.java:939) [flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.doRun(Task.java:763) [flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.run(Task.java:575) [flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.Thread.run(Unknown Source) [?:?]
+    Caused by: java.lang.ClassNotFoundException: org.apache.iceberg.flink.sink.IcebergStreamWriter
+        at java.net.URLClassLoader.findClass(Unknown Source) ~[?:?]
+        at java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoader.loadClassWithoutExceptionHandling(FlinkUserCodeClassLoader.java:67) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.ChildFirstClassLoader.loadClassWithoutExceptionHandling(ChildFirstClassLoader.java:74) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.FlinkUserCodeClassLoader.loadClass(FlinkUserCodeClassLoader.java:51) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoaders$SafetyNetWrapperClassLoader.loadClass(FlinkUserCodeClassLoaders.java:197) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.Class.forName0(Native Method) ~[?:?]
+        at java.lang.Class.forName(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil$ClassLoaderObjectInputStream.resolveClass(InstantiationUtil.java:78) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.io.ObjectInputStream.readNonProxyDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readClassDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.defaultReadFields(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readSerialData(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:533) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:521) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.readObjectFromConfig(InstantiationUtil.java:475) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.api.graph.StreamConfig.getStreamOperatorFactory(StreamConfig.java:400) ~[flink-dist-1.20.0.jar:1.20.0]
+        ... 9 more
+    2025-02-20 08:18:44,644 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Freeing task resources for IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#5 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_5).
+    2025-02-20 08:18:44,644 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Freeing task resources for IcebergStreamWriter (1/1)#5 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_5).
+    2025-02-20 08:18:44,645 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Un-registering task and sending final execution state FAILED to JobManager for task IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#5 43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_5.
+    2025-02-20 08:18:44,646 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Un-registering task and sending final execution state FAILED to JobManager for task IcebergStreamWriter (1/1)#5 43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_5.
+    2025-02-20 08:18:44,649 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Cannot find task to fail for execution 43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_5 with exception:
+    org.apache.flink.runtime.jobmaster.ExecutionGraphException: The execution attempt 43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_5 was not found.
+        at org.apache.flink.runtime.jobmaster.JobMaster.updateTaskExecutionState(JobMaster.java:521) ~[flink-dist-1.20.0.jar:1.20.0]
+        at jdk.internal.reflect.GeneratedMethodAccessor95.invoke(Unknown Source) ~[?:?]
+        at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[?:?]
+        at java.lang.reflect.Method.invoke(Unknown Source) ~[?:?]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.lambda$handleRpcInvocation$1(PekkoRpcActor.java:318) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.concurrent.ClassLoadingUtils.runWithContextClassLoader(ClassLoadingUtils.java:83) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.handleRpcInvocation(PekkoRpcActor.java:316) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.handleRpcMessage(PekkoRpcActor.java:229) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.FencedPekkoRpcActor.handleRpcMessage(FencedPekkoRpcActor.java:88) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.handleMessage(PekkoRpcActor.java:174) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.japi.pf.UnitCaseStatement.apply(CaseStatements.scala:33) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.japi.pf.UnitCaseStatement.apply(CaseStatements.scala:29) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction.applyOrElse(PartialFunction.scala:127) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction.applyOrElse$(PartialFunction.scala:126) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.japi.pf.UnitCaseStatement.applyOrElse(CaseStatements.scala:29) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:175) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:176) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:176) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.Actor.aroundReceive(Actor.scala:547) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.Actor.aroundReceive$(Actor.scala:545) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.AbstractActor.aroundReceive(AbstractActor.scala:229) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.ActorCell.receiveMessage(ActorCell.scala:590) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.ActorCell.invoke(ActorCell.scala:557) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.dispatch.Mailbox.processMailbox(Mailbox.scala:280) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.dispatch.Mailbox.run(Mailbox.scala:241) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.dispatch.Mailbox.exec(Mailbox.scala:253) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at java.util.concurrent.ForkJoinTask.doExec(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinPool.scan(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinPool.runWorker(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinWorkerThread.run(Unknown Source) [?:?]
+        at java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoaders$SafetyNetWrapperClassLoader.loadClass(FlinkUserCodeClassLoaders.java:197) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.Class.forName0(Native Method) ~[?:?]
+        at java.lang.Class.forName(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil$ClassLoaderObjectInputStream.resolveClass(InstantiationUtil.java:78) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.io.ObjectInputStream.readNonProxyDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readClassDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.defaultReadFields(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readSerialData(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:533) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:521) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.readObjectFromConfig(InstantiationUtil.java:475) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.api.graph.StreamConfig.getStreamOperatorFactory(StreamConfig.java:400) ~[flink-dist-1.20.0.jar:1.20.0]
+        ... 9 more
+    2025-02-20 08:18:52,242 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Freeing task resources for IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#6 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_6).
+    2025-02-20 08:18:52,243 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Un-registering task and sending final execution state FAILED to JobManager for task IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#6 43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_6.
+    2025-02-20 08:18:52,242 WARN  org.apache.flink.runtime.taskmanager.Task                    ] - IcebergStreamWriter (1/1)#6 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_6) switched from INITIALIZING to FAILED with failure cause:
+    org.apache.flink.streaming.runtime.tasks.StreamTaskException: Cannot load user class: org.apache.iceberg.flink.sink.IcebergStreamWriter
+    ClassLoader info: URL ClassLoader:
+        file: '/tmp/tm_localtest-session-cluster-taskmanager-1-1/blobStorage/job_e12c802e143177bdd6823136c3646c1c/blob_p-e862f06b4f069557ef1a07a9aae51d865863ef01-30a919918d4bfc534c52472ab055a9e4' (valid JAR)
+    Class not resolvable through given classloader.
+        at org.apache.flink.streaming.api.graph.StreamConfig.getStreamOperatorFactory(StreamConfig.java:414) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.OperatorChain.<init>(OperatorChain.java:169) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.RegularOperatorChain.<init>(RegularOperatorChain.java:60) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.StreamTask.restoreInternal(StreamTask.java:789) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.StreamTask.restore(StreamTask.java:771) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.runWithSystemExitMonitoring(Task.java:970) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.restoreAndInvoke(Task.java:939) [flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.doRun(Task.java:763) [flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.run(Task.java:575) [flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.Thread.run(Unknown Source) [?:?]
+    Caused by: java.lang.ClassNotFoundException: org.apache.iceberg.flink.sink.IcebergStreamWriter
+        at java.net.URLClassLoader.findClass(Unknown Source) ~[?:?]
+        at java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoader.loadClassWithoutExceptionHandling(FlinkUserCodeClassLoader.java:67) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.ChildFirstClassLoader.loadClassWithoutExceptionHandling(ChildFirstClassLoader.java:74) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.FlinkUserCodeClassLoader.loadClass(FlinkUserCodeClassLoader.java:51) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoaders$SafetyNetWrapperClassLoader.loadClass(FlinkUserCodeClassLoaders.java:197) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.Class.forName0(Native Method) ~[?:?]
+        at java.lang.Class.forName(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil$ClassLoaderObjectInputStream.resolveClass(InstantiationUtil.java:78) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.io.ObjectInputStream.readNonProxyDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readClassDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.defaultReadFields(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readSerialData(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:533) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:521) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.readObjectFromConfig(InstantiationUtil.java:475) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.api.graph.StreamConfig.getStreamOperatorFactory(StreamConfig.java:400) ~[flink-dist-1.20.0.jar:1.20.0]
+        ... 9 more
+    2025-02-20 08:18:52,244 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Freeing task resources for IcebergStreamWriter (1/1)#6 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_6).
+    2025-02-20 08:18:52,245 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Attempting to cancel task IcebergStreamWriter (1/1)#6 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_6).
+    2025-02-20 08:18:52,245 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Task IcebergStreamWriter (1/1)#6 is already in state FAILED
+    2025-02-20 08:18:52,246 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Un-registering task and sending final execution state FAILED to JobManager for task IcebergStreamWriter (1/1)#6 43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_6.
+    2025-02-20 08:18:52,246 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Cannot find task to fail for execution 43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_6 with exception:
+    org.apache.flink.runtime.jobmaster.ExecutionGraphException: The execution attempt 43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_6 was not found.
+        at org.apache.flink.runtime.jobmaster.JobMaster.updateTaskExecutionState(JobMaster.java:521) ~[flink-dist-1.20.0.jar:1.20.0]
+        at jdk.internal.reflect.GeneratedMethodAccessor95.invoke(Unknown Source) ~[?:?]
+        at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[?:?]
+        at java.lang.reflect.Method.invoke(Unknown Source) ~[?:?]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.lambda$handleRpcInvocation$1(PekkoRpcActor.java:318) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.concurrent.ClassLoadingUtils.runWithContextClassLoader(ClassLoadingUtils.java:83) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.handleRpcInvocation(PekkoRpcActor.java:316) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.handleRpcMessage(PekkoRpcActor.java:229) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.FencedPekkoRpcActor.handleRpcMessage(FencedPekkoRpcActor.java:88) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.handleMessage(PekkoRpcActor.java:174) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.japi.pf.UnitCaseStatement.apply(CaseStatements.scala:33) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.japi.pf.UnitCaseStatement.apply(CaseStatements.scala:29) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction.applyOrElse(PartialFunction.scala:127) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction.applyOrElse$(PartialFunction.scala:126) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.japi.pf.UnitCaseStatement.applyOrElse(CaseStatements.scala:29) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:175) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:176) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:176) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.Actor.aroundReceive(Actor.scala:547) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.Actor.aroundReceive$(Actor.scala:545) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.AbstractActor.aroundReceive(AbstractActor.scala:229) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.ActorCell.receiveMessage(ActorCell.scala:590) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.ActorCell.invoke(ActorCell.scala:557) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.dispatch.Mailbox.processMailbox(Mailbox.scala:280) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.dispatch.Mailbox.run(Mailbox.scala:241) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.dispatch.Mailbox.exec(Mailbox.scala:253) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at java.util.concurrent.ForkJoinTask.doExec(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinPool.scan(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinPool.runWorker(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinWorkerThread.run(Unknown Source) [?:?]
+        at org.apache.flink.util.ChildFirstClassLoader.loadClassWithoutExceptionHandling(ChildFirstClassLoader.java:74) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.FlinkUserCodeClassLoader.loadClass(FlinkUserCodeClassLoader.java:51) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoaders$SafetyNetWrapperClassLoader.loadClass(FlinkUserCodeClassLoaders.java:197) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.Class.forName0(Native Method) ~[?:?]
+        at java.lang.Class.forName(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil$ClassLoaderObjectInputStream.resolveClass(InstantiationUtil.java:78) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.io.ObjectInputStream.readNonProxyDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readClassDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.defaultReadFields(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readSerialData(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:533) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:521) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.readObjectFromConfig(InstantiationUtil.java:475) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.api.graph.StreamConfig.getStreamOperatorFactory(StreamConfig.java:400) ~[flink-dist-1.20.0.jar:1.20.0]
+        ... 9 more
+    2025-02-20 08:19:04,280 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Freeing task resources for IcebergStreamWriter (1/1)#7 (43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_7).
+    2025-02-20 08:19:04,280 WARN  org.apache.flink.runtime.taskmanager.Task                    ] - IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#7 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_7) switched from INITIALIZING to FAILED with failure cause:
+    org.apache.flink.streaming.runtime.tasks.StreamTaskException: Cannot load user class: org.apache.iceberg.flink.sink.IcebergFilesCommitter
+    ClassLoader info: URL ClassLoader:
+        file: '/tmp/tm_localtest-session-cluster-taskmanager-1-1/blobStorage/job_e12c802e143177bdd6823136c3646c1c/blob_p-e862f06b4f069557ef1a07a9aae51d865863ef01-30a919918d4bfc534c52472ab055a9e4' (valid JAR)
+    Class not resolvable through given classloader.
+        at org.apache.flink.streaming.api.graph.StreamConfig.getStreamOperatorFactory(StreamConfig.java:414) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.OperatorChain.<init>(OperatorChain.java:169) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.RegularOperatorChain.<init>(RegularOperatorChain.java:60) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.StreamTask.restoreInternal(StreamTask.java:789) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.runtime.tasks.StreamTask.restore(StreamTask.java:771) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.runWithSystemExitMonitoring(Task.java:970) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.restoreAndInvoke(Task.java:939) [flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.doRun(Task.java:763) [flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.taskmanager.Task.run(Task.java:575) [flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.Thread.run(Unknown Source) [?:?]
+    Caused by: java.lang.ClassNotFoundException: org.apache.iceberg.flink.sink.IcebergFilesCommitter
+        at java.net.URLClassLoader.findClass(Unknown Source) ~[?:?]
+        at java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoader.loadClassWithoutExceptionHandling(FlinkUserCodeClassLoader.java:67) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.ChildFirstClassLoader.loadClassWithoutExceptionHandling(ChildFirstClassLoader.java:74) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.FlinkUserCodeClassLoader.loadClass(FlinkUserCodeClassLoader.java:51) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+        at org.apache.flink.util.FlinkUserCodeClassLoaders$SafetyNetWrapperClassLoader.loadClass(FlinkUserCodeClassLoaders.java:197) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.lang.Class.forName0(Native Method) ~[?:?]
+        at java.lang.Class.forName(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil$ClassLoaderObjectInputStream.resolveClass(InstantiationUtil.java:78) ~[flink-dist-1.20.0.jar:1.20.0]
+        at java.io.ObjectInputStream.readNonProxyDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readClassDesc(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.defaultReadFields(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readSerialData(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject0(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at java.io.ObjectInputStream.readObject(Unknown Source) ~[?:?]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:533) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.deserializeObject(InstantiationUtil.java:521) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.util.InstantiationUtil.readObjectFromConfig(InstantiationUtil.java:475) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.streaming.api.graph.StreamConfig.getStreamOperatorFactory(StreamConfig.java:400) ~[flink-dist-1.20.0.jar:1.20.0]
+        ... 9 more
+    2025-02-20 08:19:04,281 INFO  org.apache.flink.runtime.taskmanager.Task                    ] - Freeing task resources for IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#7 (43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_7).
+    2025-02-20 08:19:04,282 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Un-registering task and sending final execution state FAILED to JobManager for task IcebergStreamWriter (1/1)#7 43202a2ada44e627b1d2fd8dc8c9eba7_a6ead934a4b597cc7ccac2e053da22a1_0_7.
+    2025-02-20 08:19:04,283 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Un-registering task and sending final execution state FAILED to JobManager for task IcebergFilesCommitter -> Sink: IcebergSink iceberg_hive.soe.test_number_table (1/1)#7 43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_7.
+    2025-02-20 08:19:04,285 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor           ] - Cannot find task to fail for execution 43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_7 with exception:
+    org.apache.flink.runtime.jobmaster.ExecutionGraphException: The execution attempt 43202a2ada44e627b1d2fd8dc8c9eba7_4ba5e0de9b9bf0a19d7b94f11cf285ed_0_7 was not found.
+        at org.apache.flink.runtime.jobmaster.JobMaster.updateTaskExecutionState(JobMaster.java:521) ~[flink-dist-1.20.0.jar:1.20.0]
+        at jdk.internal.reflect.GeneratedMethodAccessor95.invoke(Unknown Source) ~[?:?]
+        at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[?:?]
+        at java.lang.reflect.Method.invoke(Unknown Source) ~[?:?]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.lambda$handleRpcInvocation$1(PekkoRpcActor.java:318) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.concurrent.ClassLoadingUtils.runWithContextClassLoader(ClassLoadingUtils.java:83) ~[flink-dist-1.20.0.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.handleRpcInvocation(PekkoRpcActor.java:316) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.handleRpcMessage(PekkoRpcActor.java:229) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.FencedPekkoRpcActor.handleRpcMessage(FencedPekkoRpcActor.java:88) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.flink.runtime.rpc.pekko.PekkoRpcActor.handleMessage(PekkoRpcActor.java:174) ~[flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.japi.pf.UnitCaseStatement.apply(CaseStatements.scala:33) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.japi.pf.UnitCaseStatement.apply(CaseStatements.scala:29) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction.applyOrElse(PartialFunction.scala:127) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction.applyOrElse$(PartialFunction.scala:126) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.japi.pf.UnitCaseStatement.applyOrElse(CaseStatements.scala:29) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:175) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:176) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:176) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.Actor.aroundReceive(Actor.scala:547) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.Actor.aroundReceive$(Actor.scala:545) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.AbstractActor.aroundReceive(AbstractActor.scala:229) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.ActorCell.receiveMessage(ActorCell.scala:590) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.actor.ActorCell.invoke(ActorCell.scala:557) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.dispatch.Mailbox.processMailbox(Mailbox.scala:280) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.dispatch.Mailbox.run(Mailbox.scala:241) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at org.apache.pekko.dispatch.Mailbox.exec(Mailbox.scala:253) [flink-rpc-akka2a694021-6a60-4778-a0fe-0d2ad4672199.jar:1.20.0]
+        at java.util.concurrent.ForkJoinTask.doExec(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinPool.scan(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinPool.runWorker(Unknown Source) [?:?]
+        at java.util.concurrent.ForkJoinWorkerThread.run(Unknown Source) [?:?]
+    ```
   - application cluster
     ```
     ./bin/flink run-application \
         --target kubernetes-application \
         -Dkubernetes.cluster-id=localtest-application-cluster -Dkubernetes.service-account=flink -Dkubernetes.namespace=flinkcdc -Dkubernetes.artifacts.local-upload-enabled=false  -Dkubernetes.hadoop.conf.config-map.name=flinkcdc-hive-site-cm -Dkubernetes.container.image.ref=registry.tde.sktelecom.com/emergingdp/tlake/flink:1.20.0_scala_2.12_java11-hadoop3.2.4-hive3.1.3-iceberg1.7.1-s3-oracle local:///opt/flink/usrlib/flinkcdc-oracle-0.1-OracleToIcebergByDataStreamAPI.jar   --database.hostname 10.10.27.21 --database.port "1521" --database.username flinkcdc --database.password flinkcdc --database.dbname ORCLCDB --database.schema SOE --database.table TEST_NUMBER_TABLE --sink.metastore.uri thrift://10.10.27.26:32010 --sink.warehouse s3a://tlake-ns2/warehouse --sink.table TEST_NUMBER_TABLE4 --write.parallelism "1" --debezium.mining.strategy online_catalog
     ```
+    
 - flink application
 ```
 22:08:41.486 [XNIO-1 task-5] WARN org.apache.streampark.common.util.PropertiesUtils - [StreamPark] Error while trying to split key and value in configuration. 39 :   rpc:
