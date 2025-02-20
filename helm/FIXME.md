@@ -1,3 +1,28 @@
+- [Native Kubernetes](https://nightlies.apache.org/flink/flink-docs-release-1.20/docs/deployment/resource-providers/native_kubernetes/)
+- [Kubernetes Configuration](https://nightlies.apache.org/flink/flink-docs-release-1.20/docs/deployment/config/#kubernetes)
+- test
+  - session cluster
+    ```
+    
+    ./bin/kubernetes-session.sh -Dkubernetes.cluster-id=localtest-session-cluster -Dkubernetes.service-account=flink -Dkubernetes.namespace=flinkcdc -Dkubernetes.artifacts.local-upload-enabled=true  -Dkubernetes.hadoop.conf.config-map.name=flinkcdc-hive-site-cm -Dkubernetes.container.image.ref=registry.tde.sktelecom.com/emergingdp/tlake/flink:1.20.0_scala_2.12_java11-hadoop3.2.4-hive3.1.3-iceberg1.7.1-s3-oracle -Dkubernetes.pod-template-file.default=/Users/noname/Workspace/src/github/streaming/flinkcdc-oracle/doc/job/pod-template.yaml -Dkubernetes.rest-service.exposed.type=NodePort -Dkubernetes.artifacts.local-upload-target=s3a://tlake-ns2/jars
+    
+    JobGraph 생성 이전의 코드는 flink에서 실행한다.
+    core-site에 metastore.uris가 설정되어야 하고, HADOOP_CONF_DIR 환경변수 설정 필요
+    - job submit
+    ./bin/flink run \
+        --target kubernetes-session \
+        -Dkubernetes.cluster-id=localtest-session-cluster /Users/noname/Workspace/src/github/streaming/flinkcdc-oracle/target/flinkcdc-oracle-0.1-OracleToIcebergByDataStreamAPI.jar  --database.hostname 10.10.27.21 --database.port "1521" --database.username flinkcdc --database.password flinkcdc --database.dbname ORCLCDB --database.schema SOE --database.table TEST_NUMBER_TABLE --sink.metastore.uri thrift://10.10.27.26:32010 --sink.warehouse s3a://tlake-ns2/warehouse --write.parallelism "1" --debezium.mining.strategy online_catalog
+    
+    ./bin/flink run \
+        --target kubernetes-session \
+        -Dkubernetes.cluster-id=localtest-session-cluster local:///opt/flink/usrlib/flinkcdc-oracle-0.1-OracleToIcebergByDataStreamAPI.jar  --database.hostname 10.10.27.21 --database.port "1521" --database.username flinkcdc --database.password flinkcdc --database.dbname ORCLCDB --database.schema SOE --database.table TEST_NUMBER_TABLE --sink.metastore.uri thrift://10.10.27.26:32010 --sink.warehouse s3a://tlake-ns2/warehouse --write.parallelism "1" --debezium.mining.strategy online_catalog
+    ```
+  - application cluster
+    ```
+    ./bin/flink run-application \
+        --target kubernetes-application \
+        -Dkubernetes.cluster-id=localtest-application-cluster -Dkubernetes.service-account=flink -Dkubernetes.namespace=flinkcdc -Dkubernetes.artifacts.local-upload-enabled=false  -Dkubernetes.hadoop.conf.config-map.name=flinkcdc-hive-site-cm -Dkubernetes.container.image.ref=registry.tde.sktelecom.com/emergingdp/tlake/flink:1.20.0_scala_2.12_java11-hadoop3.2.4-hive3.1.3-iceberg1.7.1-s3-oracle local:///opt/flink/usrlib/flinkcdc-oracle-0.1-OracleToIcebergByDataStreamAPI.jar   --database.hostname 10.10.27.21 --database.port "1521" --database.username flinkcdc --database.password flinkcdc --database.dbname ORCLCDB --database.schema SOE --database.table TEST_NUMBER_TABLE --sink.metastore.uri thrift://10.10.27.26:32010 --sink.warehouse s3a://tlake-ns2/warehouse --sink.table TEST_NUMBER_TABLE4 --write.parallelism "1" --debezium.mining.strategy online_catalog
+    ```
 - flink application
 ```
 22:08:41.486 [XNIO-1 task-5] WARN org.apache.streampark.common.util.PropertiesUtils - [StreamPark] Error while trying to split key and value in configuration. 39 :   rpc:
