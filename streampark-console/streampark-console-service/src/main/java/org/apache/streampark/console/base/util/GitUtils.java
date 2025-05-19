@@ -52,7 +52,9 @@ public class GitUtils {
   public static Git clone(GitCloneRequest request) throws GitAPIException {
     try {
       CloneCommand cloneCommand =
-          Git.cloneRepository().setURI(request.getUrl()).setDirectory(request.getStoreDir());
+          Git.cloneRepository()
+              .setURI(sanitizeSshUrlForJGit(request.getUrl()))
+              .setDirectory(request.getStoreDir());
       setCredentials(cloneCommand, request);
       if (StringUtils.isNotBlank(request.getBranch())) {
         cloneCommand.setBranch(Constants.R_HEADS + request.getBranch());
@@ -70,7 +72,7 @@ public class GitUtils {
       return git;
     } catch (Exception e) {
       if (e instanceof InvalidRemoteException && request.getConnType() == GitConnType.HTTP) {
-        String url = httpUrlToSSH(request.getUrl());
+        String url = httpUrlToSSH(sanitizeSshUrlForJGit(request.getUrl()));
         request.setUrl(url);
         return clone(request);
       }
@@ -80,7 +82,10 @@ public class GitUtils {
 
   public static List<String> getBranches(GitGetRequest request) throws GitAPIException {
     try {
-      LsRemoteCommand command = Git.lsRemoteRepository().setRemote(request.getUrl()).setHeads(true);
+      LsRemoteCommand command =
+          Git.lsRemoteRepository()
+              .setRemote(sanitizeSshUrlForJGit(request.getUrl()))
+              .setHeads(true);
       setCredentials(command, request);
       Collection<Ref> refList = command.call();
       List<String> branchList = new ArrayList<>(4);
@@ -94,7 +99,7 @@ public class GitUtils {
       return branchList;
     } catch (Exception e) {
       if (e instanceof InvalidRemoteException && request.getConnType() == GitConnType.HTTP) {
-        String url = httpUrlToSSH(request.getUrl());
+        String url = httpUrlToSSH(sanitizeSshUrlForJGit(request.getUrl()));
         request.setUrl(url);
         return getBranches(request);
       }
@@ -104,7 +109,8 @@ public class GitUtils {
 
   public static List<String> getTags(GitGetRequest request) throws GitAPIException {
     try {
-      LsRemoteCommand command = Git.lsRemoteRepository().setRemote(request.getUrl()).setTags(true);
+      LsRemoteCommand command =
+          Git.lsRemoteRepository().setRemote(sanitizeSshUrlForJGit(request.getUrl())).setTags(true);
       setCredentials(command, request);
       Collection<Ref> refList = command.call();
       List<String> tagList = new ArrayList<>(4);
@@ -118,7 +124,7 @@ public class GitUtils {
       return tagList;
     } catch (Exception e) {
       if (e instanceof InvalidRemoteException && request.getConnType() == GitConnType.HTTP) {
-        String url = httpUrlToSSH(request.getUrl());
+        String url = httpUrlToSSH(sanitizeSshUrlForJGit(request.getUrl()));
         request.setUrl(url);
         return getTags(request);
       }
@@ -131,11 +137,32 @@ public class GitUtils {
   }
 
   public static boolean isSshRepositoryUrl(String url) {
-    return url.trim().startsWith("git@");
+    return url.trim().startsWith("git@") || url.trim().startsWith("ssh://git@");
   }
 
   public static boolean isHttpRepositoryUrl(String url) {
     return !isSshRepositoryUrl(url);
+  }
+
+  public static String sanitizeSshUrlForJGit(String url) {
+    if (!isSshRepositoryUrl(url)) {
+      return url;
+    }
+
+    if (url.startsWith("ssh://git@")) {
+      return url;
+    }
+
+    if (url.matches("^git@[^:]+:[^/]+/.+\\.git$")) {
+      String[] parts = url.split("[:/]");
+      if (parts.length >= 3) {
+        String host = parts[0].substring(4);
+        String user = parts[1];
+        String repo = url.substring(url.indexOf(':') + 1);
+        return String.format("ssh://git@%s/%s", host, repo);
+      }
+    }
+    return url;
   }
 
   private static void setCredentials(

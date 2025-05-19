@@ -46,4 +46,29 @@ public class GitUtilsTest {
     request.setStoreDir(new File("/tmp"));
     GitUtils.clone(request);
   }
+
+  @Test
+  void testSanitizeSshUrlForJGit() {
+    GitUtils.GitCloneRequest request = new GitUtils.GitCloneRequest();
+
+    // Test with SCP-style URL
+    request.setUrl("git@github.com:apache/incubator-streampark.git");
+    String sanitized1 = GitUtils.sanitizeSshUrlForJGit(request.getUrl());
+    assert sanitized1.equals("ssh://git@github.com/apache/incubator-streampark.git");
+
+    // Test with ssh:// URL and port
+    request.setUrl("ssh://git@github.com:22/apache/incubator-streampark.git");
+    String sanitized2 = GitUtils.sanitizeSshUrlForJGit(request.getUrl());
+    assert sanitized2.equals("ssh://git@github.com:22/apache/incubator-streampark.git");
+
+    // Test with already sanitized URI
+    request.setUrl("ssh://git@github.com/apache/incubator-streampark.git");
+    String sanitized3 = GitUtils.sanitizeSshUrlForJGit(request.getUrl());
+    assert sanitized3.equals("ssh://git@github.com/apache/incubator-streampark.git");
+
+    // Test with HTTPS
+    request.setUrl("https://github.com/apache/incubator-streampark.git");
+    String sanitized4 = GitUtils.sanitizeSshUrlForJGit(request.getUrl());
+    assert sanitized4.equals("https://github.com/apache/incubator-streampark.git");
+  }
 }

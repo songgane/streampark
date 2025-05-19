@@ -43,7 +43,7 @@ export const useProject = () => {
     if (!values.url) {
       return Promise.reject(t('flink.project.form.repositoryURLRequired'));
     }
-    if (/^git@(.*)/.test(values.url) || /^http(s)?:\/\//.test(values.url)) {
+    if (/^(ssh:\/\/)?git@(.*)/.test(values.url) || /^http(s)?:\/\//.test(values.url)) {
       return Promise.resolve();
     } else {
       return Promise.reject(t('flink.project.form.credentialError'));
