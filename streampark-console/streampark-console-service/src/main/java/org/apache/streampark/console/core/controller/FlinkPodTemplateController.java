@@ -57,7 +57,9 @@ public class FlinkPodTemplateController {
     return RestResponse.success(PodTemplateParser.getInitPodTemplateContent());
   }
 
-  /** @param hosts hostname:ipv4,hostname:ipv4,hostname:ipv4... */
+  /**
+   * @param hosts hostname:ipv4,hostname:ipv4,hostname:ipv4...
+   */
   @PostMapping("compHostAlias")
   public RestResponse completeHostAlias(String hosts, String podTemplate) {
     Map<String, String> hostMap = covertHostsParamToMap(hosts);
@@ -92,7 +94,9 @@ public class FlinkPodTemplateController {
     return RestResponse.success(friendlyHosts);
   }
 
-  /** @param hosts hostname:ipv4,hostname:ipv4,hostname:ipv4... */
+  /**
+   * @param hosts hostname:ipv4,hostname:ipv4,hostname:ipv4...
+   */
   @PostMapping("previewHostAlias")
   public RestResponse previewHostAlias(String hosts) {
     Map<String, String> hostMap = covertHostsParamToMap(hosts);

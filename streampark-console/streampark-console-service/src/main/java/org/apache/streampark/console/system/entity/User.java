@@ -40,6 +40,7 @@ import java.util.Date;
 public class User implements Serializable {
 
   private static final long serialVersionUID = 1L;
+
   /** user status */
   public static final String STATUS_VALID = "1";
 

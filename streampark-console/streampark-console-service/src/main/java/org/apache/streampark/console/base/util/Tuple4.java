@@ -49,10 +49,13 @@ public class Tuple4<T0, T1, T2, T3> extends Tuple {
 
   /** Field 0 of the tuple. */
   public T0 t1;
+
   /** Field 1 of the tuple. */
   public T1 t2;
+
   /** Field 2 of the tuple. */
   public T2 t3;
+
   /** Field 3 of the tuple. */
   public T3 t4;
 

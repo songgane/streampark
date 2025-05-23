@@ -38,6 +38,7 @@ public class Effective {
   private Long id;
 
   private Long appId;
+
   /**
    * 1) config <br>
    * 2) flink Sql<br>

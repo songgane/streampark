@@ -77,6 +77,7 @@ public class Application implements Serializable {
   private Integer jobType;
 
   private Long projectId;
+
   /** creator */
   private Long userId;
 
@@ -103,6 +104,7 @@ public class Application implements Serializable {
   private String k8sNamespace = K8sFlinkConfig.DEFAULT_KUBERNETES_NAMESPACE();
 
   private Integer state;
+
   /** task release status */
   @TableField("`release`")
   private Integer release;
@@ -126,6 +128,7 @@ public class Application implements Serializable {
 
   @TableField(updateStrategy = FieldStrategy.IGNORED)
   private String args;
+
   /** application module */
   private String module;
 
@@ -202,6 +205,7 @@ public class Application implements Serializable {
 
   /** The exposed type of the rest service of K8s(kubernetes.rest-service.exposed.type) */
   private Integer k8sRestExposedType;
+
   /** flink kubernetes pod template */
   private String k8sPodTemplate;
 

@@ -1,5 +1,180 @@
-- [Native Kubernetes](https://nightlies.apache.org/flink/flink-docs-release-1.20/docs/deployment/resource-providers/native_kubernetes/)
-- [Kubernetes Configuration](https://nightlies.apache.org/flink/flink-docs-release-1.20/docs/deployment/config/#kubernetes)
+# flink w/streampark on kunernetes
+
+## Overview 
+Kubernetes 환경에서 동작하는 Flink Job을 StreamPark으로 관리하는 방안을 모색합니다.
+
+## Reference
+  - https://streampark.apache.org/blog/streampark-flink-on-k8s/
+  - [Native Kubernetes](https://nightlies.apache.org/flink/flink-docs-release-1.20/docs/deployment/resource-providers/native_kubernetes/)
+  - [Kubernetes Configuration](https://nightlies.apache.org/flink/flink-docs-release-1.20/docs/deployment/config/#kubernetes)
+
+## 구성
+  - jdk: 11
+  - scala: 12
+  - apache flink: 1.20.1
+    - flinkcdc 3.3.0
+      - https://repo1.maven.org/maven2/org/apache/flink/flink-sql-connector-oracle-cdc/3.3.0/flink-sql-connector-oracle-cdc-3.3.0.jar
+      - iceberg, kafka pipeline 활용을 위해서는 3.4.0 이후를 고려해야 함
+    - apache iceberg: 1.9.0
+    - hadoop-s3: 3.3.4
+    - hive: 3.1.3
+  - apache streampark: 2.1.5
+    - flinkcdc 지원기능이 dev branch에는 포함됨
+    - postgresql: 16.4
+    - flink 배포를 위한 nfs 연결
+  - kubernetes: 1.31.1
+
+## 배포
+### Apache Flink
+- NFS를 이용해 Apache StreamPark에 마운트합니다.
+- hadoop-s3와 iceberg runtime 라이브러리를 기본으로 포함합니다.
+  - hadoop-s3
+    ```
+    hadoop-aws-3.3.4.jar
+    commons-configuration2-2.1.1.jar
+    commons-logging-1.1.3.jar
+    hadoop-auth-3.3.4.jar
+    hadoop-common-3.3.4.jar
+    hadoop-hdfs-client-3.3.4.jar
+    hadoop-mapreduce-client-core-3.3.4.jar
+    hadoop-shaded-guava-1.1.1.jar
+    stax2-api-4.2.1.jar
+    woodstox-core-5.3.0.jar
+    aws-java-sdk-bundle-1.12.262.jar
+    ```    
+  - flinkcdc
+    - https://repo1.maven.org/maven2/org/apache/flink/flink-sql-parquet/1.20.1/flink-sql-parquet-1.20.1.jar
+    - https://repo1.maven.org/maven2/org/apache/flink/flink-sql-connector-hive-3.1.3_2.12/1.20.1/flink-sql-connector-hive-3.1.3_2.12-1.20.1.jar
+    - https://repo1.maven.org/maven2/org/apache/flink/flink-sql-connector-oracle-cdc/3.3.0/flink-sql-connector-oracle-cdc-3.3.0.jar
+      ```
+      flink-sql-parquet-1.20.1.jar
+      flink-sql-connector-hive-3.1.3_2.12-1.20.1.jar
+      flink-sql-connector-oracle-cdc-3.3.0.jar
+      ```
+  - iceberg runtime
+    - https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-flink-runtime-1.20/1.9.0/iceberg-flink-runtime-1.20-1.9.0.jar 
+    ```
+    iceberg-flink-runtime-1.20-1.9.0.jar
+    ```
+  - oracle
+    ```
+    ojdbc8-19.3.0.0.jar
+    ```
+
+### Apache StreamPark
+- jdk11을 지원하는 streampark container image를 생성합니다.
+  - [Dockerfile](../docker/Dockerfile.jdk11)
+- streampark project에 포함된 Helm Chart를 활용해 배포합니다.
+  - helm packaging & push
+    ```
+    # helm package ./streampark
+    Successfully packaged chart and saved it to: ../incubator-streampark/helm/streampark-2.1.5.tgz
+    
+    # helm plugin install https://github.com/chartmuseum/helm-push
+    Downloading and installing helm-push v0.10.4 ...
+    https://github.com/chartmuseum/helm-push/releases/download/v0.10.4/helm-push_0.10.4_darwin_amd64.tar.gz
+    Installed plugin: cm-push
+
+    # helm cm-push ./streampark-2.1.5.tgz tde-devel    
+    Pushing streampark-2.1.5.tgz to tde-devel...
+    Done.
+
+    # helm git:(release-2.1.5-tlake) ✗ helm repo update tde-devel
+    Hang tight while we grab the latest from your chart repositories...
+    ...Successfully got an update from the "tde-devel" chart repository
+    Update Complete. ⎈Happy Helming!⎈
+
+    # helm git:(release-2.1.5-tlake) ✗ helm search repo tde-devel
+    NAME                                    CHART VERSION           APP VERSION     DESCRIPTION                                       
+    ...                      
+    tde-devel/streampark                    2.1.5                   2.1.5           A Helm chart for the Apache StreamPark
+    ```
+  - postresql 설치
+  - schema 및 sample data 생성
+    - [pgsql-schema.sql](../streampark-console/streampark-console-service/src/main/assembly/script/schema/pgsql-schema.sql)
+    - [pgsql-data.sql](../streampark-console/streampark-console-service/src/main/assembly/script/data/pgsql-data.sql)
+  - value yaml 작성
+    - [values.yaml](./values-tlake-ns2.yaml)
+  - ingress 또는 port-forwarding을 통해 UI에 접속합니다.
+    - 초기 계정(admin/streampark)
+
+- flink 초기화 후 재실행
+- 
+```
+        -Dkubernetes.container.image.ref=registry.tde.sktelecom.com/emergingdp/tlake/flink:1.20.0_scala_2.12_java11-hadoop3.2.4-hive3.1.3-iceberg1.7.1-s3-oracle \
+# ./bin/kubernetes-session.sh \
+        -Dkubernetes.cluster-id=localtest-session-cluster \
+        -Dkubernetes.service-account=flink \
+        -Dkubernetes.namespace=flinkcdc \
+        -Dkubernetes.artifacts.local-upload-enabled=true  \
+        -Dkubernetes.hadoop.conf.config-map.name=flinkcdc-hive-site-cm \
+        -Dkubernetes.container.image.ref=registry.tde.sktelecom.com/emergingdp/tlake/flink:1.20.0_scala_2.12_java11-hadoop3.3.6-hive3.1.3-iceberg1.7.1-s3-flinkcdc3.2.1-oracle \
+        -Dkubernetes.pod-template-file.default=/Users/noname/Workspace/src/github/streaming/flinkcdc-oracle/doc/job/pod-template.yaml \
+        -Dkubernetes.rest-service.exposed.type=NodePort 
+2025-02-21 08:08:50,395 INFO  org.apache.flink.configuration.GlobalConfiguration           [] - Using standard YAML parser to load flink configuration file from /Users/noname/Workspace/bin/flink-1.20.0/conf/config.yaml.
+2025-02-21 08:08:50,448 INFO  org.apache.flink.configuration.GlobalConfiguration           [] - Loading configuration property: taskmanager.memory.process.size, 1728m
+2025-02-21 08:08:50,448 INFO  org.apache.flink.configuration.GlobalConfiguration           [] - Loading configuration property: taskmanager.bind-host, localhost
+2025-02-21 08:08:50,448 INFO  org.apache.flink.configuration.GlobalConfiguration           [] - Loading configuration property: jobmanager.execution.failover-strategy, region
+2025-02-21 08:08:50,448 INFO  org.apache.flink.configuration.GlobalConfiguration           [] - Loading configuration property: jobmanager.rpc.address, localhost
+2025-02-21 08:08:50,448 INFO  org.apache.flink.configuration.GlobalConfiguration           [] - Loading configuration property: jobmanager.memory.process.size, 1600m
+2025-02-21 08:08:50,448 INFO  org.apache.flink.configuration.GlobalConfiguration           [] - Loading configuration property: jobmanager.rpc.port, 6123
+2025-02-21 08:08:50,448 INFO  org.apache.flink.configuration.GlobalConfiguration           [] - Loading configuration property: rest.bind-address, localhost
+2025-02-21 08:08:50,448 INFO  org.apache.flink.configuration.GlobalConfiguration           [] - Loading configuration property: jobmanager.bind-host, localhost
+2025-02-21 08:08:50,448 INFO  org.apache.flink.configuration.GlobalConfiguration           [] - Loading configuration property: taskmanager.host, localhost
+2025-02-21 08:08:50,448 INFO  org.apache.flink.configuration.GlobalConfiguration           [] - Loading configuration property: parallelism.default, 1
+2025-02-21 08:08:50,449 INFO  org.apache.flink.configuration.GlobalConfiguration           [] - Loading configuration property: taskmanager.numberOfTaskSlots, 1
+2025-02-21 08:08:50,449 INFO  org.apache.flink.configuration.GlobalConfiguration           [] - Loading configuration property: rest.address, localhost
+2025-02-21 08:08:50,449 INFO  org.apache.flink.configuration.GlobalConfiguration           [] - Loading configuration property: env.java.opts.all, --add-exports=java.base/sun.net.util=ALL-UNNAMED --add-exports=java.rmi/sun.rmi.registry=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED --add-exports=java.security.jgss/sun.security.krb5=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.base/java.time=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.locks=ALL-UNNAMED
+2025-02-21 08:08:50,522 INFO  org.apache.flink.client.deployment.DefaultClusterClientServiceLoader [] - Could not load factory due to missing dependencies.
+2025-02-21 08:08:52,537 INFO  org.apache.flink.runtime.util.config.memory.ProcessMemoryUtils [] - The derived from fraction jvm overhead memory (160.000mb (167772162 bytes)) is less than its min value 192.000mb (201326592 bytes), min value will be used instead
+2025-02-21 08:08:52,554 INFO  org.apache.flink.runtime.util.config.memory.ProcessMemoryUtils [] - The derived from fraction jvm overhead memory (172.800mb (181193935 bytes)) is less than its min value 192.000mb (201326592 bytes), min value will be used instead
+2025-02-21 08:08:52,764 INFO  org.apache.flink.kubernetes.utils.KubernetesUtils            [] - Kubernetes deployment requires a fixed port. Configuration blob.server.port will be set to 6124
+2025-02-21 08:08:52,764 INFO  org.apache.flink.kubernetes.utils.KubernetesUtils            [] - Kubernetes deployment requires a fixed port. Configuration taskmanager.rpc.port will be set to 6122
+2025-02-21 08:08:52,768 INFO  org.apache.flink.configuration.Configuration                 [] - Config uses fallback configuration key 'kubernetes.pod-template-file.default' instead of key 'kubernetes.pod-template-file.jobmanager'
+2025-02-21 08:08:53,118 INFO  org.apache.flink.configuration.Configuration                 [] - Config uses fallback configuration key 'kubernetes.service-account' instead of key 'kubernetes.jobmanager.service-account'
+2025-02-21 08:08:53,173 INFO  org.apache.flink.configuration.Configuration                 [] - Config uses fallback configuration key 'kubernetes.pod-template-file.default' instead of key 'kubernetes.pod-template-file.taskmanager'
+2025-02-21 08:08:53,175 INFO  org.apache.flink.configuration.Configuration                 [] - Config uses fallback configuration key 'kubernetes.pod-template-file.default' instead of key 'kubernetes.pod-template-file.taskmanager'
+2025-02-21 08:08:54,789 INFO  org.apache.flink.kubernetes.KubernetesClusterDescriptor      [] - Create flink session cluster localtest-session-cluster successfully, JobManager Web Interface: http://10.10.27.26:32694
+
+# ./bin/flink run \
+    --target kubernetes-session \
+    -Dkubernetes.cluster-id=localtest-session-cluster \
+    /Users/noname/Workspace/src/github/streaming/flinkcdc-oracle/target/flinkcdc-oracle-0.1-OracleToIcebergByDataStreamAPI.jar --database.hostname 10.10.27.21 --database.port "1521" --database.username flinkcdc --database.password flinkcdc --database.dbname ORCLCDB --database.schema SOE --database.table TEST_NUMBER_TABLE --sink.metastore.uri thrift://10.10.27.26:32010 --sink.warehouse s3a://tlake-ns2/warehouse --write.parallelism "1" --debezium.mining.strategy online_catalog 
+
+------------------------------------------------------------
+ The program finished with the following exception:
+
+java.lang.RuntimeException: Could not look up the main(String[]) method from the class com.sktelecom.aidata.flinkcdc.job.OracleToIcebergByDataStreamAPI: org/apache/flink/cdc/debezium/DebeziumDeserializationSchema
+	at org.apache.flink.client.program.PackagedProgram.hasMainMethod(PackagedProgram.java:316)
+	at org.apache.flink.client.program.PackagedProgram.<init>(PackagedProgram.java:162)
+	at org.apache.flink.client.program.PackagedProgram.<init>(PackagedProgram.java:66)
+	at org.apache.flink.client.program.PackagedProgram$Builder.build(PackagedProgram.java:697)
+	at org.apache.flink.client.cli.CliFrontend.buildProgram(CliFrontend.java:1065)
+	at org.apache.flink.client.cli.CliFrontend.getPackagedProgram(CliFrontend.java:272)
+	at org.apache.flink.client.cli.CliFrontend.run(CliFrontend.java:246)
+	at org.apache.flink.client.cli.CliFrontend.parseAndRun(CliFrontend.java:1270)
+	at org.apache.flink.client.cli.CliFrontend.lambda$mainInternal$10(CliFrontend.java:1367)
+	at org.apache.flink.runtime.security.contexts.NoOpSecurityContext.runSecured(NoOpSecurityContext.java:28)
+	at org.apache.flink.client.cli.CliFrontend.mainInternal(CliFrontend.java:1367)
+	at org.apache.flink.client.cli.CliFrontend.main(CliFrontend.java:1335)
+Caused by: java.lang.NoClassDefFoundError: org/apache/flink/cdc/debezium/DebeziumDeserializationSchema
+	at java.base/java.lang.Class.getDeclaredMethods0(Native Method)
+	at java.base/java.lang.Class.privateGetDeclaredMethods(Class.java:3166)
+	at java.base/java.lang.Class.getMethodsRecursive(Class.java:3307)
+	at java.base/java.lang.Class.getMethod0(Class.java:3293)
+	at java.base/java.lang.Class.getMethod(Class.java:2106)
+	at org.apache.flink.client.program.PackagedProgram.hasMainMethod(PackagedProgram.java:308)
+	... 11 more
+Caused by: java.lang.ClassNotFoundException: org.apache.flink.cdc.debezium.DebeziumDeserializationSchema
+	at java.base/java.net.URLClassLoader.findClass(URLClassLoader.java:476)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:594)
+	at org.apache.flink.util.FlinkUserCodeClassLoader.loadClassWithoutExceptionHandling(FlinkUserCodeClassLoader.java:67)
+	at org.apache.flink.util.ChildFirstClassLoader.loadClassWithoutExceptionHandling(ChildFirstClassLoader.java:65)
+	at org.apache.flink.util.FlinkUserCodeClassLoader.loadClass(FlinkUserCodeClassLoader.java:51)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:527)
+	... 17 more
+```
+- 
 - test
   - flink가 실행되는 환경에 HADOOP_CONF_DIR이 설정되어야 한다.
   - hive.metastore.uris 설정은 HADOOP CONF(core-site.xml)에 포함되어야 한다.

@@ -31,6 +31,7 @@ import java.util.Properties;
 public class KafkaJavaSink<T> {
 
   private final StreamingContext context;
+
   /** common param */
   private Properties property = new Properties();
 

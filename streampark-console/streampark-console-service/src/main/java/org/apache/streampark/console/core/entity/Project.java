@@ -83,6 +83,7 @@ public class Project implements Serializable {
   private String buildArgs;
 
   private String description;
+
   /**
    * Build status: -2: Changed, need to rebuild -1: Not built 0: Building 1: Build successful 2:
    * Build failed

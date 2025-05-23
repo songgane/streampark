@@ -47,6 +47,7 @@ public class Tuple2<T0, T1> extends Tuple {
 
   /** Field 0 of the tuple. */
   public T0 t1;
+
   /** Field 1 of the tuple. */
   public T1 t2;
 

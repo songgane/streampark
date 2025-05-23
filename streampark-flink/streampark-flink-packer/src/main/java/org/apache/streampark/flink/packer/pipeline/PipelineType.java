@@ -73,10 +73,13 @@ public enum PipelineType {
       SimpleBuildResponse.class);
 
   private final Integer code;
+
   /** short description of pipeline type. */
   private final String desc;
+
   /** building steps of pipeline, element => [sorted seq -> step desc]. */
   private final Map<Integer, String> steps;
+
   /** type of result */
   private final Class<? extends BuildResult> resultType;
 

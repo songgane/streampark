@@ -34,16 +34,22 @@ public class ApplicationLog {
 
   @TableId(type = IdType.AUTO)
   private Long id;
+
   /** appId */
   private Long appId;
+
   /** applicationId */
   private String yarnAppId;
+
   /** The address of the jobmanager, that is, the direct access address of the Flink web UI */
   private String jobManagerUrl;
+
   /** start status */
   private Boolean success;
+
   /** option name */
   private Integer optionName;
+
   /** option time */
   private Date optionTime;
 

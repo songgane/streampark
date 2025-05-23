@@ -222,7 +222,8 @@ public class YarnQueueServiceImpl extends ServiceImpl<YarnQueueMapper, YarnQueue
   public void checkNotReferencedByFlinkClusters(
       @Nonnull String queueLabel, @Nonnull String operation) {
     List<FlinkCluster> clustersReferenceYarnQueueLabel =
-        flinkClusterService.getByExecutionModes(Sets.newHashSet(ExecutionMode.YARN_SESSION))
+        flinkClusterService
+            .getByExecutionModes(Sets.newHashSet(ExecutionMode.YARN_SESSION))
             .stream()
             .filter(flinkCluster -> StringUtils.equals(flinkCluster.getYarnQueue(), queueLabel))
             .collect(Collectors.toList());

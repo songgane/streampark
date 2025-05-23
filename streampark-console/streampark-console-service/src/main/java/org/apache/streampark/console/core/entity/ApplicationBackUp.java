@@ -42,6 +42,7 @@ public class ApplicationBackUp {
   private Long configId;
   private String path;
   private String description;
+
   /** version number at the backup */
   private Integer version;
 
