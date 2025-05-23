@@ -117,6 +117,7 @@ spec:
   volumeMounts:
     - name: flink-pv
       mountPath: /opt/flink
+
   volumes:
     - name: flink-pv
       persistentVolumeClaim:
@@ -163,6 +164,7 @@ streamParkDefaultConfiguration:
       username: postgres
       password: postgres
       url: jdbc:postgresql://streampark-pg-rw:5432/streampark?stringtype=unspecified
+    spring.jackson.time-zone: GMT+9
   # logback-spring.xml: |+
   #   ...
 
