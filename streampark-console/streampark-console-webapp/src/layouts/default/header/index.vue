@@ -39,15 +39,15 @@
       </a-button>
       <Divider type="vertical" />
 
-      <Popover placement="bottom" trigger="hover" arrow-point-at-center>
+      <!--FIXME:<Popover placement="bottom" trigger="hover" arrow-point-at-center>
         <template #content>
           <img src="/@/assets/images/join_wechat.png" alt="qrcode" class="h-150px w-150px" />
         </template>
         <Icon icon="cib:wechat" :class="`${prefixCls}-action__item`" />
-      </Popover>
+      </Popover>-->
 
       <!-- Github info -->
-      <Github :class="`${prefixCls}-action__item github-item`" />
+      <!--FIXME:<Github :class="`${prefixCls}-action__item github-item`" />-->
       <!-- Theme Switch -->
       <appDarkModeToggle />
 
