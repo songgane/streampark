@@ -44,10 +44,11 @@
       </div>
       <div class="w-full px-100px mx-auto pb-2">
         <Row :gutter="24">
-          <Col :md="12" :span="24" class="self-center pr-5 z-100 -enter-x">
-            <!--FIXME:<LoginSlogan />-->
+          <!--FIXME:<Col :md="12" :span="24" class="self-center pr-5 z-100 -enter-x">
+            <LoginSlogan />
           </Col>
-          <Col :md="12" :span="24">
+          <Col :md="12" :span="24">-->
+          <Col :span="24">
             <div
               :class="`${prefixCls}-form`"
               class="relative w-auto m-auto max-w-420px bg-[rgba(0,0,0,0.65)] rounded-2px px-10 py-5 shadow-2xl shadow-blue-500 enter-x z-100"
