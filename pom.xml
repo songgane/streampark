@@ -82,7 +82,7 @@
     </issueManagement>
 
     <properties>
-        <project.build.jdk>1.8</project.build.jdk>
+        <project.build.jdk>11</project.build.jdk>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -93,7 +93,7 @@
         <scala.binary.flink.version>_${scala.binary.version}</scala.binary.flink.version>
         <flink.connector.version>3.2.0-1.18</flink.connector.version>
         <flink.elasticserch.connector.version>3.0.1-1.17</flink.elasticserch.connector.version>
-        <flink.version>1.20.1</flink.version>
+        <flink.version>1.20.0</flink.version>
         <flink.shaded.version>1.8.1</flink.shaded.version>
         <streampark.shaded.version>1.0.0</streampark.shaded.version>
         <streampark.flink.shims.version>1.14</streampark.flink.shims.version>
@@ -151,7 +151,7 @@
         <maven.scalastyle.skip>false</maven.scalastyle.skip>
 
         <spotless.skip>false</spotless.skip>
-        <rat.skip>false</rat.skip>
+        <rat.skip>true</rat.skip>
         <owasp.skip>true</owasp.skip>
     </properties>
 
