@@ -23,7 +23,7 @@
     </template>
     <LayoutMenu :theme="getMenuTheme" :menuMode="getMode" :splitType="getSplitType" />
     <DragBar ref="dragBarRef" />
-    <div
+    <!--FIXME:<div
       class="flex justify-between items-center border-t-1 border-[#c0c0c01a] h-35px px-4"
       v-if="!getCollapsed"
     >
@@ -39,7 +39,7 @@
       <a @click="openWindow(DOC_URL)" class="text-gray-400 hover:text-white">
         {{ t('layout.footer.onlineDocument') }}
       </a>
-    </div>
+    </div>-->
   </Sider>
 </template>
 <script lang="ts">

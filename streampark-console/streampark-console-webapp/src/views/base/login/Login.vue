@@ -44,10 +44,10 @@
       </div>
       <div class="w-full px-100px mx-auto pb-2">
         <Row :gutter="24">
-          <Col :md="12" :span="24" class="self-center pr-5 z-100 -enter-x">
+          <!--FIXME:<Col :md="12" :span="24" class="self-center pr-5 z-100 -enter-x">
             <LoginSlogan />
-          </Col>
-          <Col :md="12" :span="24">
+          </Col>-->
+          <Col :span="24">
             <div
               :class="`${prefixCls}-form`"
               class="relative w-auto m-auto max-w-420px bg-[rgba(0,0,0,0.65)] rounded-2px px-10 py-5 shadow-2xl shadow-blue-500 enter-x z-100"
@@ -58,7 +58,7 @@
         </Row>
       </div>
     </div>
-    <footer class="w-1150px m-auto text-center bg-transparent opacity-60">
+    <!--FIXME:<footer class="w-1150px m-auto text-center bg-transparent opacity-60">
       <div class="flex items-center justify-center">
         <a
           :href="TWITTER_URL"
@@ -95,7 +95,7 @@
         StreamPark, StreamPark, and its feather logo are trademarks of The Apache Software
         Foundation.
       </p>
-    </footer>
+    </footer>-->
   </div>
 </template>
 <script lang="ts" setup>

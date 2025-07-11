@@ -42,7 +42,7 @@
       <Divider type="vertical" />
 
       <!-- Github info -->
-      <Github :class="`${prefixCls}-action__item github-item`" />
+      <!--FIXME:<Github :class="`${prefixCls}-action__item github-item`" />-->
       <!-- Theme Switch -->
       <appDarkModeToggle />
 
