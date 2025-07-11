@@ -18,7 +18,7 @@
       />
       <LayoutBreadcrumb v-if="getShowContent && getShowBread" :theme="getHeaderTheme" />
       <!-- slogan -->
-      <!--FIXME:<Slogan class="hidden xl:block" />-->
+      <Slogan class="hidden xl:block" />
     </div>
     <!-- left end -->
 
