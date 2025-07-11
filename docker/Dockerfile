@@ -19,10 +19,10 @@ FROM ubuntu:22.04
 USER root
 
 ENV LANG=C.UTF-8 \
-    JAVA_HOME=/usr/lib/jvm/jdk8
+    JAVA_HOME=/usr/lib/jvm/jdk11
 
 # Build arguments for version management
-ARG JAVA_MAJOR_VERSION=8
+ARG JAVA_MAJOR_VERSION=11
 ARG TINI_VERSION=v0.19.0
 
 # Base system setup
@@ -35,6 +35,7 @@ RUN apt update && \
         iputils-ping \
         net-tools \
         vim \
+        maven \
         wget && \
     add-apt-repository -y ppa:openjdk-r/ppa && \
     apt update && \
