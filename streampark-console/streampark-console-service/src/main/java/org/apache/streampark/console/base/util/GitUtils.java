@@ -17,12 +17,14 @@
 
 package org.apache.streampark.console.base.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.TransportCommand;
@@ -52,9 +54,10 @@ public class GitUtils {
 
     public static Git clone(GitCloneRequest request) throws GitAPIException {
         try {
-            Git.cloneRepository()
-                .setURI(sanitizeSshUrlForJGit(request.getUrl()))
-                .setDirectory(request.getStoreDir());
+            CloneCommand cloneCommand =
+                Git.cloneRepository()
+                    .setURI(sanitizeSshUrlForJGit(request.getUrl()))
+                    .setDirectory(request.getStoreDir());
             setCredentials(cloneCommand, request);
             if (StringUtils.isNotBlank(request.getBranch())) {
                 cloneCommand.setBranch(Constants.R_HEADS + request.getBranch());
@@ -166,7 +169,7 @@ public class GitUtils {
     }
 
     private static void setCredentials(
-        TransportCommand<?, ?> transportCommand, GitAuthRequest request) {
+                                       TransportCommand<?, ?> transportCommand, GitAuthRequest request) {
         switch (request.connType) {
             case HTTP:
                 if (!StringUtils.isAllEmpty(request.getUsername(), request.getPassword())) {
